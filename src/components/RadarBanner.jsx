@@ -1,9 +1,10 @@
 import React from 'react';
-import { Zap, Sparkles, Activity } from 'lucide-react';
+import { Zap, Sparkles, Activity, X } from 'lucide-react';
 
 export default function RadarBanner({
   newJobAlert,
   onDismissAlert,
+  onReviewAlert,
   totalJobsCount,
   ultraFreshCount,
   nextScanSeconds = 30
@@ -29,7 +30,7 @@ export default function RadarBanner({
           <span className="text-zinc-700 hidden sm:inline">•</span>
 
           <p className="text-zinc-300 font-medium text-[11px] sm:text-xs">
-            Tracking tech nodes in <span className="text-white font-semibold">Mumbai</span>, <span className="text-white font-semibold">Bangalore</span> & <span className="text-white font-semibold">Remote</span>
+            Tracking nodes in <span className="text-white font-semibold">India</span>, <span className="text-white font-semibold">Singapore</span>, <span className="text-white font-semibold">Dubai</span>, <span className="text-white font-semibold">Europe</span> & <span className="text-white font-semibold">Remote</span>
           </p>
 
           <span className="px-2 py-0.5 rounded-full bg-indigo-950/70 border border-indigo-500/30 text-indigo-300 text-[10px] font-mono font-bold">
@@ -61,13 +62,26 @@ export default function RadarBanner({
                 <strong className="text-white font-bold">{newJobAlert.company}</strong> just posted: <span className="underline text-cyan-300">{newJobAlert.title}</span> ({newJobAlert.salaryDisplay})
               </span>
             </div>
-            <button
-              type="button"
-              onClick={onDismissAlert}
-              className="text-[11px] px-2.5 py-0.5 rounded-lg bg-indigo-500/30 hover:bg-indigo-500/50 text-white font-bold cursor-pointer transition border border-indigo-500/30"
-            >
-              Review
-            </button>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  if (onReviewAlert) onReviewAlert(newJobAlert);
+                  else onDismissAlert();
+                }}
+                className="text-[11px] px-2.5 py-0.5 rounded-lg bg-indigo-500/30 hover:bg-indigo-500/50 text-white font-bold cursor-pointer transition border border-indigo-500/30"
+              >
+                Review
+              </button>
+              <button
+                type="button"
+                onClick={onDismissAlert}
+                className="p-1 text-zinc-400 hover:text-white transition cursor-pointer"
+                title="Dismiss alert"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       )}

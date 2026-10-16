@@ -1,9 +1,10 @@
 /**
- * HirePulse - Curated Real-Time Indian Tech Job Dataset
- * Specifically tailored for modern frontend / full-stack engineering roles
+ * HirePulse - Curated Real-Time Indian & Global Tech Job Dataset
+ * Tailored for modern frontend / full-stack engineering roles across top Indian tech hubs & global IT destinations
  */
 
 export const INITIAL_JOBS = [
+  // --- MUMBAI & BANGALORE CORE HUBS ---
   {
     id: 'hp-firstlabs-01',
     title: 'Associate Frontend Developer',
@@ -17,22 +18,9 @@ export const INITIAL_JOBS = [
     postedMinutesAgo: 4,
     applicantsCount: 7,
     urgency: 'Actively Interviewing',
-    tags: ['React', 'JavaScript', 'Tailwind CSS', 'CSS', 'Web APIs', 'Core Web Vitals'],
+    tags: ['React', 'JavaScript', 'Tailwind CSS', 'Web APIs', 'Core Web Vitals'],
     requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'HTML5/CSS', 'Git'],
-    description: `FirstHire is built to help job seekers discover relevant jobs while they're still fresh, so you can act faster and apply earlier.
-
-We are hiring an Associate Frontend Developer to join our core engineering team in Mumbai. In this role, you will build responsive web interfaces, engineer client-side architectures, and collaborate closely with product design to ship polished user experiences.
-
-Key Responsibilities:
-• Develop responsive, accessible web applications using modern React, JavaScript, and Tailwind CSS.
-• Optimize client-side rendering performance, Core Web Vitals, and asset delivery to maintain sub-second page loads.
-• Architect optimistic state updates, client caching, and offline-tolerant workflows with Web Storage.
-• Translate product requirements and design mockups into reusable, accessible component systems adhering to WCAG standards.
-
-Perks:
-• Comprehensive Health Insurance (₹10 Lakhs coverage)
-• Annual ₹1,00,000 Learning & Conference Budget
-• Daily catered gourmet meals, snacks & Mumbai commute reimbursements.`
+    description: `FirstHire is built to help job seekers discover relevant jobs while they're still fresh. Develop responsive, accessible web applications using modern React, JavaScript, and Tailwind CSS with sub-second page loads.`
   },
   {
     id: 'hp-swiggy-02',
@@ -49,12 +37,7 @@ Perks:
     urgency: 'Fresh Drop',
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Redux', 'Performance'],
     requiredSkills: ['React', 'TypeScript', 'JavaScript', 'HTML5/CSS', 'Git'],
-    description: `Swiggy is scaling India's fastest on-demand delivery ecosystem. As a Frontend Engineer I, you will build critical customer-facing interfaces used by millions of daily active diners.
-
-Responsibilities:
-• Architect high-frequency cart, checkout, and tracking flows with zero layout shifts.
-• Implement real-time delivery status tracking using resilient WebSocket polling fallbacks.
-• Optimize micro-frontend bundles to reduce mobile 4G latency below 800ms.`
+    description: `Swiggy is scaling India's fastest on-demand delivery ecosystem. Architect high-frequency cart, checkout, and live tracking flows with zero layout shifts and micro-frontend bundling.`
   },
   {
     id: 'hp-zerodha-03',
@@ -71,12 +54,7 @@ Responsibilities:
     urgency: 'Just Opened',
     tags: ['JavaScript', 'React', 'CSS Internals', 'WebSockets', 'DOM'],
     requiredSkills: ['JavaScript', 'React', 'HTML5/CSS', 'DOM', 'Git'],
-    description: `Zerodha powers India's largest retail trading volume. We pride ourselves on building lightweight, zero-bloat web applications that operate seamlessly during market volatility.
-
-Responsibilities:
-• Build high-frequency financial ticker displays and order execution widgets.
-• Maximize DOM rendering efficiency and minimize reflows during rapid tick updates.
-• Embrace vanilla JavaScript standards and minimal external dependency philosophy.`
+    description: `Zerodha powers India's largest retail trading volume. Build high-frequency financial ticker displays and order execution widgets with zero-bloat vanilla standards.`
   },
   {
     id: 'hp-razorpay-04',
@@ -93,12 +71,7 @@ Responsibilities:
     urgency: 'Early Bird',
     tags: ['React', 'Tailwind CSS', 'TypeScript', 'Design Systems', 'REST APIs'],
     requiredSkills: ['React', 'Tailwind CSS', 'JavaScript', 'REST APIs', 'Git'],
-    description: `Razorpay enables seamless payments for millions of businesses. The Merchant Dashboard engineering team is seeking a UI Engineer to craft delightful banking experiences.
-
-Responsibilities:
-• Construct modular dashboard components adhering to Razorpay's Blade design system.
-• Ensure WCAG 2.1 AA accessibility compliance across all financial forms and tables.
-• Implement optimistic transaction status updates and offline-tolerant retry queues.`
+    description: `Razorpay enables seamless payments for millions of businesses. Construct modular dashboard components adhering to Razorpay's Blade design system and WCAG 2.1 AA accessibility.`
   },
   {
     id: 'hp-cred-05',
@@ -115,12 +88,7 @@ Responsibilities:
     urgency: 'High Response Rate',
     tags: ['React', 'Framer Motion', 'Tailwind CSS', 'WebGL', 'Animations'],
     requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'HTML5/CSS', 'Git'],
-    description: `CRED is renowned for setting global benchmarks in design precision, fluid animations, and high-trust financial interfaces.
-
-Responsibilities:
-• Translate ambitious Figma designs into 60fps micro-animations and physics-based interactions.
-• Maintain pixel-perfect rendering parity across desktop, iOS Safari, and Android Chrome.
-• Engineer resilient reward claim experiences with sub-second feedback loops.`
+    description: `CRED sets global benchmarks in design precision and fluid animations. Translate ambitious Figma designs into 60fps micro-animations and physics-based interactions.`
   },
   {
     id: 'hp-zepto-06',
@@ -137,117 +105,154 @@ Responsibilities:
     urgency: 'Actively Interviewing',
     tags: ['React', 'JavaScript', 'Tailwind CSS', 'PWA', 'IndexedDB'],
     requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'HTML5/CSS', 'Git'],
-    description: `Zepto is revolutionizing 10-minute grocery logistics. We are seeking a fast-paced frontend developer to drive customer conversion across mobile web.
-
-Responsibilities:
-• Build lightning-fast search autocomplete and category discovery screens.
-• Leverage IndexedDB and LocalStorage for offline catalog caching and instant reloads.
-• Collaborate with growth squads on multivariate A/B testing pipelines.`
+    description: `Zepto is revolutionizing 10-minute grocery logistics. Build lightning-fast search autocomplete and category discovery screens using client-side caching.`
   },
+
+  // --- HYDERABAD TECH CORRIDOR ---
   {
-    id: 'hp-postman-07',
-    title: 'Software Engineer - API Client UI',
-    company: 'Postman',
-    badgeColor: 'from-amber-600 to-orange-700',
-    location: 'Bangalore, India (Hybrid)',
+    id: 'hp-microsoft-07',
+    title: 'Software Engineer - Azure Cloud Studio',
+    company: 'Microsoft IDC',
+    badgeColor: 'from-cyan-600 to-blue-700',
+    location: 'Hyderabad, India (Hybrid)',
     workMode: 'Hybrid',
     experience: '1-3 Yrs',
-    salaryLPA: 19,
-    salaryDisplay: '₹18 - ₹22 LPA',
-    postedMinutesAgo: 78,
-    applicantsCount: 29,
-    urgency: 'Just Opened',
-    tags: ['React', 'TypeScript', 'REST APIs', 'Web Standards', 'State Machines'],
-    requiredSkills: ['React', 'JavaScript', 'TypeScript', 'REST APIs', 'Git'],
-    description: `Postman is used by over 30 million developers globally. Help us build the next generation of web-based API testing, collaboration, and documentation suites.
-
-Responsibilities:
-• Engineer reactive code editors, response inspectors, and visual query builders.
-• Optimize complex client-side state trees with minimal re-render footprints.
-• Maintain robust unit and visual regression test suites.`
+    salaryLPA: 20,
+    salaryDisplay: '₹18 - ₹24 LPA + Stocks',
+    postedMinutesAgo: 22,
+    applicantsCount: 28,
+    urgency: 'Fresh Drop',
+    tags: ['TypeScript', 'React', 'Cloud Services', 'Accessibility', 'Design System'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'REST APIs', 'Git'],
+    description: `Microsoft India Development Centre in Hyderabad is hiring for the Azure portal team. Engineer massive-scale cloud management dashboards with fluid performance and enterprise security.`
   },
   {
-    id: 'hp-browserstack-08',
-    title: 'Frontend Engineer (Cloud Tools)',
-    company: 'BrowserStack',
-    badgeColor: 'from-emerald-600 to-cyan-700',
-    location: 'Mumbai, India (Remote)',
-    workMode: 'Remote',
-    experience: '0-2 Yrs',
-    salaryLPA: 13,
-    salaryDisplay: '₹12 - ₹14 LPA',
-    postedMinutesAgo: 94,
-    applicantsCount: 45,
-    urgency: 'Early Bird',
-    tags: ['JavaScript', 'React', 'HTML5/CSS', 'Cross-Browser', 'Vite'],
-    requiredSkills: ['JavaScript', 'React', 'HTML5/CSS', 'Git'],
-    description: `BrowserStack is India's premier testing cloud unicorn. Join our core frontend team to build cross-browser diagnostic consoles and device streaming interfaces.
-
-Responsibilities:
-• Ensure flawless visual and functional rendering across 3,000+ browser/OS combinations.
-• Build accessible keyboard-navigable devtool overlays and session timelines.`
+    id: 'hp-uber-08',
+    title: 'Frontend Engineer - Mobility Platform',
+    company: 'Uber',
+    badgeColor: 'from-zinc-900 to-black',
+    location: 'Hyderabad, India (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: '₹20 - ₹24 LPA + RSUs',
+    postedMinutesAgo: 38,
+    applicantsCount: 35,
+    urgency: 'Fresh Drop',
+    tags: ['React', 'WebSockets', 'Mapbox', 'High Throughput', 'TypeScript'],
+    requiredSkills: ['React', 'JavaScript', 'TypeScript', 'Web APIs', 'Git'],
+    description: `Join Uber's Hyderabad engineering campus. Build real-time trip coordination tools, dynamic driver routing maps, and rider dispatch consoles with live WebSocket feeds.`
   },
   {
-    id: 'hp-juspay-09',
-    title: 'Frontend Developer - Payments UI',
-    company: 'Juspay',
-    badgeColor: 'from-blue-700 to-teal-600',
-    location: 'Bangalore, India (On-site)',
+    id: 'hp-darwinbox-09',
+    title: 'Associate UI Developer (HRTech Suite)',
+    company: 'Darwinbox',
+    badgeColor: 'from-blue-600 to-violet-600',
+    location: 'Hyderabad, India (On-site)',
     workMode: 'On-site',
     experience: '0-2 Yrs',
-    salaryLPA: 15,
-    salaryDisplay: '₹14 - ₹16 LPA',
-    postedMinutesAgo: 110,
-    applicantsCount: 52,
-    urgency: 'High Response Rate',
-    tags: ['React', 'Functional Programming', 'State Management', 'Web APIs'],
-    requiredSkills: ['React', 'JavaScript', 'DOM', 'HTML5/CSS', 'Git'],
-    description: `Juspay processes billions of UPI and card transactions monthly. We emphasize functional programming principles, strict type hygiene, and zero-defect UI engineering.
-
-Responsibilities:
-• Implement 1-click checkout sheets and banking authentication overlays.
-• Handle edge-case network disconnects and payment recovery states seamlessly.`
+    salaryLPA: 12,
+    salaryDisplay: '₹10 - ₹13 LPA',
+    postedMinutesAgo: 72,
+    applicantsCount: 26,
+    urgency: 'Early Bird',
+    tags: ['React', 'Tailwind CSS', 'JavaScript', 'Enterprise UI', 'PWA'],
+    requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'HTML5/CSS', 'Git'],
+    description: `Darwinbox is Asia's fastest-growing enterprise HRTech unicorn. Build employee payroll dashboards, interactive leave calendars, and performance review workflows.`
   },
+
+  // --- PUNE TECH & SAAS HUB ---
   {
-    id: 'hp-phonepe-10',
-    title: 'Software Engineer - Merchant Web',
+    id: 'hp-phonepe-pune-10',
+    title: 'UI Engineer - Merchant Analytics',
     company: 'PhonePe',
     badgeColor: 'from-violet-600 to-purple-700',
-    location: 'Bangalore, India (Hybrid)',
+    location: 'Pune, India (Hybrid)',
     workMode: 'Hybrid',
     experience: '1-3 Yrs',
-    salaryLPA: 17,
-    salaryDisplay: '₹16 - ₹19 LPA',
-    postedMinutesAgo: 135,
-    applicantsCount: 60,
-    urgency: 'Actively Interviewing',
+    salaryLPA: 18,
+    salaryDisplay: '₹16 - ₹20 LPA',
+    postedMinutesAgo: 15,
+    applicantsCount: 19,
+    urgency: 'Fresh Drop',
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Charts', 'Analytics'],
-    requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'Git'],
-    description: `PhonePe is India's leading fintech platform. Build analytical dashboards and settlement reporting portals for 35M+ offline and online merchants.
-
-Responsibilities:
-• Craft responsive charts, settlement ledgers, and downloadable tax summaries.
-• Maintain snappy sub-100ms UI response times across deep tabular datasets.`
+    requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'TypeScript', 'Git'],
+    description: `PhonePe's Pune Innovation Lab is developing advanced financial reporting and merchant settlement dashboards. Optimize deep tabular rendering and offline sync.`
   },
   {
-    id: 'hp-groww-11',
-    title: 'Frontend Engineer (Direct Mutual Funds)',
-    company: 'Groww',
-    badgeColor: 'from-teal-500 to-emerald-600',
-    location: 'Bangalore, India (Hybrid)',
+    id: 'hp-persistent-11',
+    title: 'Associate Software Engineer (Web Modernization)',
+    company: 'Persistent Systems',
+    badgeColor: 'from-orange-600 to-red-600',
+    location: 'Pune, India (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '0-2 Yrs',
+    salaryLPA: 9,
+    salaryDisplay: '₹8 - ₹10 LPA + Bonus',
+    postedMinutesAgo: 85,
+    applicantsCount: 39,
+    urgency: 'Just Opened',
+    tags: ['React', 'JavaScript', 'CSS', 'REST APIs', 'Unit Testing'],
+    requiredSkills: ['React', 'JavaScript', 'HTML5/CSS', 'REST APIs', 'Git'],
+    description: `Persistent Systems in Hinjawadi, Pune is looking for Frontend Developers to modernize enterprise banking and healthcare client portals to modern React component stacks.`
+  },
+
+  // --- CHENNAI SAAS CAPITAL ---
+  {
+    id: 'hp-zoho-12',
+    title: 'Web Developer - Zoho One Ecosystem',
+    company: 'Zoho Corporation',
+    badgeColor: 'from-red-500 to-amber-600',
+    location: 'Chennai, India (On-site)',
+    workMode: 'On-site',
+    experience: '0-2 Yrs',
+    salaryLPA: 10,
+    salaryDisplay: '₹9 - ₹12 LPA',
+    postedMinutesAgo: 25,
+    applicantsCount: 30,
+    urgency: 'Fresh Drop',
+    tags: ['JavaScript', 'React', 'DOM Internals', 'CSS', 'Performance'],
+    requiredSkills: ['JavaScript', 'React', 'HTML5/CSS', 'DOM', 'Git'],
+    description: `Zoho builds cloud software trusted by 100M+ users globally. Work from Zoho's sprawling Chennai campus crafting high-performance spreadsheet and CRM web applications.`
+  },
+  {
+    id: 'hp-freshworks-13',
+    title: 'Frontend Engineer - Freshdesk Omni',
+    company: 'Freshworks',
+    badgeColor: 'from-amber-500 to-orange-600',
+    location: 'Chennai, India (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '1-3 Yrs',
+    salaryLPA: 16,
+    salaryDisplay: '₹15 - ₹18 LPA + Stock Options',
+    postedMinutesAgo: 45,
+    applicantsCount: 24,
+    urgency: 'Early Bird',
+    tags: ['React', 'TypeScript', 'Design Systems', 'Storybook', 'Tailwind CSS'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'Tailwind CSS', 'Git'],
+    description: `Freshworks (NASDAQ: FRSH) makes business software people love. Build omnichannel customer support chat widgets and ticketing workspaces with instant response times.`
+  },
+
+  // --- DELHI-NCR (GURGAON & NOIDA) ---
+  {
+    id: 'hp-zomato-14',
+    title: 'UI Engineer - Live Delivery Radar',
+    company: 'Zomato',
+    badgeColor: 'from-red-600 to-rose-700',
+    location: 'Gurgaon, India (Hybrid)',
     workMode: 'Hybrid',
     experience: '0-2 Yrs',
     salaryLPA: 14,
-    salaryDisplay: '₹13 - ₹16 LPA',
-    postedMinutesAgo: 150,
-    applicantsCount: 48,
-    urgency: 'Early Bird',
-    tags: ['React', 'Tailwind CSS', 'JavaScript', 'Responsive UI', 'SIP Calculator'],
+    salaryDisplay: '₹12 - ₹15 LPA',
+    postedMinutesAgo: 11,
+    applicantsCount: 22,
+    urgency: 'Fresh Drop',
+    tags: ['React', 'JavaScript', 'Mapbox', 'Tailwind CSS', 'Live Tracking'],
     requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'HTML5/CSS', 'Git'],
-    description: `Groww makes wealth creation simple and transparent. Join the mutual funds frontend guild to build modern SIP calculators, fund comparison matrices, and KYC flows.`
+    description: `Zomato powers dining and hyper-local food delivery across India. Work from the Gurgaon HQ constructing live delivery route trackers and real-time menu rendering modules.`
   },
   {
-    id: 'hp-urbancompany-12',
+    id: 'hp-urbancompany-15',
     title: 'Associate UI Engineer',
     company: 'Urban Company',
     badgeColor: 'from-slate-800 to-slate-950',
@@ -256,63 +261,315 @@ Responsibilities:
     experience: '0-2 Yrs',
     salaryLPA: 11,
     salaryDisplay: '₹10 - ₹12 LPA',
-    postedMinutesAgo: 180,
-    applicantsCount: 64,
+    postedMinutesAgo: 90,
+    applicantsCount: 54,
     urgency: 'Actively Interviewing',
     tags: ['React', 'JavaScript', 'Tailwind CSS', 'Web Storage', 'PWA'],
     requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'Git'],
     description: `Urban Company empowers 50,000+ service partners globally. Build intuitive appointment booking calendars, localized service catalogs, and partner evaluation flows.`
   },
   {
-    id: 'hp-meesho-13',
-    title: 'Frontend Developer - Reseller Portal',
-    company: 'Meesho',
-    badgeColor: 'from-pink-600 to-rose-700',
-    location: 'Bangalore, India (Remote)',
-    workMode: 'Remote',
-    experience: '1-3 Yrs',
-    salaryLPA: 16,
-    salaryDisplay: '₹15 - ₹18 LPA',
-    postedMinutesAgo: 210,
-    applicantsCount: 75,
-    urgency: 'Just Opened',
-    tags: ['React', 'Performance', 'Mobile Web', 'Tailwind CSS'],
-    requiredSkills: ['React', 'JavaScript', 'HTML5/CSS', 'Git'],
-    description: `Meesho powers e-commerce for Bharat. Optimize our lightweight mobile web application for 3G/4G connections across Tier-2 and Tier-3 cities.`
-  },
-  {
-    id: 'hp-inmobi-14',
-    title: 'UI Engineer - AdTech Creative Suite',
-    company: 'InMobi',
-    badgeColor: 'from-indigo-600 to-violet-700',
-    location: 'Bangalore, India (Hybrid)',
+    id: 'hp-lenskart-16',
+    title: 'Frontend Developer - 3D Try-On UI',
+    company: 'Lenskart',
+    badgeColor: 'from-emerald-600 to-cyan-600',
+    location: 'Delhi-NCR, India (Hybrid)',
     workMode: 'Hybrid',
     experience: '1-3 Yrs',
     salaryLPA: 15,
     salaryDisplay: '₹14 - ₹17 LPA',
-    postedMinutesAgo: 250,
-    applicantsCount: 42,
-    urgency: 'Early Bird',
-    tags: ['JavaScript', 'Canvas', 'React', 'CSS Animations', 'DOM'],
-    requiredSkills: ['JavaScript', 'React', 'DOM', 'HTML5/CSS', 'Git'],
-    description: `InMobi is India's first tech unicorn. Build interactive ad creative previewers, drag-and-drop banner builders, and campaign telemetry dashboards.`
+    postedMinutesAgo: 60,
+    applicantsCount: 29,
+    urgency: 'Just Opened',
+    tags: ['React', 'Three.js', 'Canvas', 'Tailwind CSS', 'Web APIs'],
+    requiredSkills: ['React', 'JavaScript', 'Web APIs', 'HTML5/CSS', 'Git'],
+    description: `Lenskart is transforming eyewear through technology. Build high-engagement virtual 3D try-on experiences, frame sizing recommendation wizards, and checkout funnels.`
   },
   {
-    id: 'hp-firstlabs-15',
-    title: 'Junior Software Engineer (Real-Time UI)',
-    company: 'The First Labs',
-    badgeColor: 'from-emerald-600 to-teal-800',
-    location: 'Mumbai, India (On-site)',
+    id: 'hp-infoedge-17',
+    title: 'Frontend Software Engineer',
+    company: 'Info Edge (Naukri.com)',
+    badgeColor: 'from-blue-600 to-indigo-800',
+    location: 'Noida, India (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '1-3 Yrs',
+    salaryLPA: 13,
+    salaryDisplay: '₹12 - ₹15 LPA',
+    postedMinutesAgo: 115,
+    applicantsCount: 47,
+    urgency: 'High Response Rate',
+    tags: ['React', 'TypeScript', 'SEO', 'Core Web Vitals', 'SSR'],
+    requiredSkills: ['React', 'JavaScript', 'TypeScript', 'HTML5/CSS', 'Git'],
+    description: `Info Edge operates India's largest job marketplace Naukri.com. Optimize job search result listing speeds, candidate resume uploaders, and SEO landing page bundles.`
+  },
+
+  // --- AHMEDABAD, KOCHI & KOLKATA ---
+  {
+    id: 'hp-infibeam-18',
+    title: 'UI Developer - CCAvenue Payment Gateway',
+    company: 'Infibeam Avenues',
+    badgeColor: 'from-teal-600 to-cyan-800',
+    location: 'Ahmedabad (GIFT City), India (On-site)',
     workMode: 'On-site',
     experience: '0-2 Yrs',
     salaryLPA: 9,
-    salaryDisplay: '₹8.5 - ₹10 LPA + Performance Bonus',
-    postedMinutesAgo: 8,
-    applicantsCount: 11,
+    salaryDisplay: '₹8 - ₹11 LPA',
+    postedMinutesAgo: 70,
+    applicantsCount: 18,
+    urgency: 'Early Bird',
+    tags: ['React', 'JavaScript', 'Security', 'Fintech', 'Responsive'],
+    requiredSkills: ['React', 'JavaScript', 'HTML5/CSS', 'REST APIs', 'Git'],
+    description: `Infibeam's GIFT City Fintech campus is hiring Frontend Developers to build ultra-secure, multi-currency payment checkout interfaces processing millions of daily transactions.`
+  },
+  {
+    id: 'hp-kochi-tech-19',
+    title: 'Junior React Developer',
+    company: 'RapidValue Systems',
+    badgeColor: 'from-sky-600 to-blue-800',
+    location: 'Kochi (Infopark), India (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '0-2 Yrs',
+    salaryLPA: 8,
+    salaryDisplay: '₹7 - ₹9 LPA',
+    postedMinutesAgo: 140,
+    applicantsCount: 22,
+    urgency: 'Actively Interviewing',
+    tags: ['React', 'Tailwind CSS', 'REST APIs', 'State Management'],
+    requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'HTML5/CSS', 'Git'],
+    description: `Located in Kochi's Infopark technology corridor. Work on international enterprise client applications, modernizing frontend interfaces with responsive React components.`
+  },
+  {
+    id: 'hp-kolkata-it-20',
+    title: 'UI Engineer - Cloud SaaS Portal',
+    company: 'PwC India Acceleration',
+    badgeColor: 'from-amber-600 to-orange-700',
+    location: 'Kolkata (Salt Lake Sector V), India (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '1-3 Yrs',
+    salaryLPA: 12,
+    salaryDisplay: '₹11 - ₹13 LPA',
+    postedMinutesAgo: 160,
+    applicantsCount: 31,
+    urgency: 'Early Bird',
+    tags: ['React', 'TypeScript', 'Enterprise', 'Dashboards'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'HTML5/CSS', 'Git'],
+    description: `Join PwC's technology acceleration center in Kolkata's Sector V. Engineer complex data visualization suites and regulatory compliance management portals.`
+  },
+
+  // --- SINGAPORE (APAC TECH CAPITAL) ---
+  {
+    id: 'hp-stripe-sg-21',
+    title: 'Frontend Engineer - Global Payments UI',
+    company: 'Stripe',
+    badgeColor: 'from-violet-600 to-indigo-700',
+    location: 'Singapore (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: 'SGD 115k - 140k / yr (₹20+ LPA Equiv)',
+    postedMinutesAgo: 9,
+    applicantsCount: 15,
     urgency: 'Fresh Drop',
-    tags: ['React', 'WebSocket', 'Optimistic UI', 'State Management', 'Tailwind CSS'],
-    requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'Web APIs', 'Git'],
-    description: `Join The First Labs' incubation core team in Mumbai to build ultra-fast candidate discovery dashboards, real-time alert pipelines, and candidate matchmaking engines.`
+    tags: ['React', 'TypeScript', 'Global Fintech', 'CSS Architecture', 'Web Standards'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'Web APIs', 'Git'],
+    description: `Stripe is the economic infrastructure for the internet. Join our APAC engineering hub in Singapore building the world's most elegant checkout elements and developer billing dashboards.`
+  },
+  {
+    id: 'hp-grab-sg-22',
+    title: 'UI Engineer - SuperApp Consumer Experience',
+    company: 'Grab',
+    badgeColor: 'from-emerald-600 to-green-700',
+    location: 'Singapore (On-site)',
+    workMode: 'On-site',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: 'SGD 100k - 125k / yr + Relocation',
+    postedMinutesAgo: 31,
+    applicantsCount: 27,
+    urgency: 'Fresh Drop',
+    tags: ['React', 'Mobile Web', 'TypeScript', 'Micro-frontends'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'HTML5/CSS', 'Git'],
+    description: `Grab is Southeast Asia's leading superapp for ride-hailing, food delivery, and digital payments. Craft lightning-fast consumer booking flows and merchant partner consoles.`
+  },
+
+  // --- DUBAI & UAE (MENA TECH HUB) ---
+  {
+    id: 'hp-careem-dubai-23',
+    title: 'Frontend Developer - Everyday Super App',
+    company: 'Careem',
+    badgeColor: 'from-emerald-500 to-teal-700',
+    location: 'Dubai, UAE (Tax-Free • Hybrid)',
+    workMode: 'Hybrid',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: 'AED 20,000 - 25,000 / mo (100% Tax-Free)',
+    postedMinutesAgo: 14,
+    applicantsCount: 18,
+    urgency: 'Fresh Drop',
+    tags: ['React', 'TypeScript', 'Tailwind CSS', 'Internationalization', 'Fintech'],
+    requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'TypeScript', 'Git'],
+    description: `Careem (an Uber company) powers mobility, food, and digital wallets across 10 countries in the Middle East. Work from sunny Dubai with 100% tax-free compensation.`
+  },
+  {
+    id: 'hp-talabat-dubai-24',
+    title: 'UI Engineer - Quick Commerce & Delivery',
+    company: 'Talabat',
+    badgeColor: 'from-orange-500 to-amber-600',
+    location: 'Dubai, UAE (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '0-2 Yrs',
+    salaryLPA: 19,
+    salaryDisplay: 'AED 16,000 - 20,000 / mo (Tax-Free)',
+    postedMinutesAgo: 48,
+    applicantsCount: 23,
+    urgency: 'Early Bird',
+    tags: ['React', 'Next.js', 'Redux', 'Tailwind CSS', 'PWA'],
+    requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'HTML5/CSS', 'Git'],
+    description: `Talabat (part of Delivery Hero SE) is the leading on-demand food and grocery platform in the MENA region. Engineer real-time order tracking and personalized food menus.`
+  },
+
+  // --- LONDON & UK FINTECH HUB ---
+  {
+    id: 'hp-revolut-london-25',
+    title: 'Frontend Software Engineer - Retail Banking',
+    company: 'Revolut',
+    badgeColor: 'from-slate-900 to-blue-900',
+    location: 'London, UK (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: '£55,000 - £70,000 / yr + Equity',
+    postedMinutesAgo: 17,
+    applicantsCount: 20,
+    urgency: 'Fresh Drop',
+    tags: ['React', 'TypeScript', 'Fintech', 'Design Systems', 'Core Web Vitals'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'REST APIs', 'Git'],
+    description: `Revolut is building the world's first global financial superapp with 45M+ customers. Join our London tech headquarters to engineer high-frequency foreign exchange and debit card management web portals.`
+  },
+  {
+    id: 'hp-deliveroo-london-26',
+    title: 'UI Engineer - Restaurant Partner Web',
+    company: 'Deliveroo',
+    badgeColor: 'from-teal-500 to-cyan-600',
+    location: 'London, UK (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '0-2 Yrs',
+    salaryLPA: 18,
+    salaryDisplay: '£48,000 - £60,000 / yr',
+    postedMinutesAgo: 62,
+    applicantsCount: 33,
+    urgency: 'Early Bird',
+    tags: ['React', 'TypeScript', 'Tailwind CSS', 'WebSockets'],
+    requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'HTML5/CSS', 'Git'],
+    description: `Deliveroo connects millions of consumers with the best local restaurants. Build mission-critical kitchen tablet interfaces, live rider dispatch displays, and order management consoles.`
+  },
+
+  // --- EUROPEAN TECH HUBS (BERLIN & AMSTERDAM) ---
+  {
+    id: 'hp-booking-amsterdam-27',
+    title: 'Frontend Developer - Accommodations Discovery',
+    company: 'Booking.com',
+    badgeColor: 'from-blue-700 to-indigo-900',
+    location: 'Amsterdam, Netherlands (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: '€65,000 - €80,000 / yr + Relocation',
+    postedMinutesAgo: 26,
+    applicantsCount: 25,
+    urgency: 'Fresh Drop',
+    tags: ['React', 'JavaScript', 'High Traffic', 'A/B Testing', 'Web Standards'],
+    requiredSkills: ['React', 'JavaScript', 'HTML5/CSS', 'DOM', 'Git'],
+    description: `Booking.com is one of the world's leading digital travel companies. Engineer search result pages, price comparison filters, and room reservation flows visited by hundreds of millions of travelers.`
+  },
+  {
+    id: 'hp-deliveryhero-berlin-28',
+    title: 'Frontend Engineer - Global Quick Commerce',
+    company: 'Delivery Hero',
+    badgeColor: 'from-red-600 to-rose-700',
+    location: 'Berlin, Germany (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '0-2 Yrs',
+    salaryLPA: 18,
+    salaryDisplay: '€52,000 - €65,000 / yr',
+    postedMinutesAgo: 82,
+    applicantsCount: 28,
+    urgency: 'Just Opened',
+    tags: ['React', 'TypeScript', 'Tailwind CSS', 'PWA'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'Tailwind CSS', 'Git'],
+    description: `Delivery Hero operates on-demand delivery platforms in 70+ countries worldwide. Work from our vibrant Berlin campus engineering multi-tenant storefront components.`
+  },
+
+  // --- UNITED STATES & SILICON VALLEY REMOTE ---
+  {
+    id: 'hp-vercel-remote-29',
+    title: 'Frontend Platform Engineer',
+    company: 'Vercel',
+    badgeColor: 'from-black to-zinc-800',
+    location: 'San Francisco, USA (Worldwide Remote)',
+    workMode: 'Remote',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: '$105,000 - $130,000 / yr + Equity',
+    postedMinutesAgo: 7,
+    applicantsCount: 19,
+    urgency: 'Fresh Drop',
+    tags: ['React', 'Next.js', 'Tailwind CSS', 'Turbopack', 'Edge Compute'],
+    requiredSkills: ['React', 'TypeScript', 'Tailwind CSS', 'JavaScript', 'Git'],
+    description: `Vercel enables the world's best frontend developers to build and deploy faster. Build the Vercel dashboard, real-time analytics monitors, and preview deployment inspection bars.`
+  },
+  {
+    id: 'hp-github-remote-30',
+    title: 'Software Engineer - Code Collaboration UI',
+    company: 'GitHub',
+    badgeColor: 'from-neutral-900 to-stone-800',
+    location: 'United States (Global Remote)',
+    workMode: 'Remote',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: '$110,000 - $135,000 / yr',
+    postedMinutesAgo: 36,
+    applicantsCount: 42,
+    urgency: 'Fresh Drop',
+    tags: ['TypeScript', 'React', 'Web Components', 'Accessibility', 'Git'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'DOM', 'Git'],
+    description: `GitHub is the home for all developers. Build pull request diff viewers, issues project boards, and collaborative code review tools with strict accessibility compliance.`
+  },
+  {
+    id: 'hp-figma-remote-31',
+    title: 'UI Engineer - Design System Platform',
+    company: 'Figma',
+    badgeColor: 'from-pink-500 via-purple-500 to-blue-500',
+    location: 'San Francisco, USA (Remote)',
+    workMode: 'Remote',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: '$120,000 - $145,000 / yr + RSUs',
+    postedMinutesAgo: 50,
+    applicantsCount: 37,
+    urgency: 'Early Bird',
+    tags: ['React', 'WebGL', 'Canvas', 'TypeScript', 'Design Tools'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'DOM', 'Git'],
+    description: `Figma is where teams design together. Build community asset libraries, component variant managers, and prototype inspection panels that bridge design with production code.`
+  },
+
+  // --- TOKYO, JAPAN (EAST ASIA HUB) ---
+  {
+    id: 'hp-mercari-tokyo-32',
+    title: 'Frontend Software Engineer',
+    company: 'Mercari',
+    badgeColor: 'from-blue-600 to-red-600',
+    location: 'Tokyo (Roppongi), Japan (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '0-2 Yrs',
+    salaryLPA: 19,
+    salaryDisplay: '¥6.5M - ¥8.5M / yr (Relocation Support)',
+    postedMinutesAgo: 40,
+    applicantsCount: 16,
+    urgency: 'Fresh Drop',
+    tags: ['React', 'TypeScript', 'GraphQL', 'PWA', 'Global Team'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'HTML5/CSS', 'Git'],
+    description: `Mercari is Japan's largest C2C marketplace app expanding globally. Work in English from Roppongi Hills, Tokyo developing item photo listing wizards and instant payment settlements.`
   }
 ];
 
@@ -325,24 +582,88 @@ export const DEFAULT_CANDIDATE_SKILLS = [
   'Git'
 ];
 
+// Pre-seeded pipeline stages so recruiter / candidate immediately sees active stages
+export const DEFAULT_PIPELINE = {
+  'hp-firstlabs-01': 'applied',
+  'hp-swiggy-02': 'interviewing',
+  'hp-razorpay-04': 'saved',
+};
+
 export const ALL_AVAILABLE_SKILLS = [
   'React',
   'JavaScript',
   'TypeScript',
+  'Next.js',
   'Tailwind CSS',
   'HTML5/CSS',
+  'Node.js',
   'DOM',
   'Web APIs',
   'Git',
   'REST APIs',
   'Redux',
-  'Core Web Vitals'
+  'GraphQL',
+  'WebSockets',
+  'Core Web Vitals',
+  'Docker'
 ];
 
 // Additional incoming dynamic stream pool to simulate real-time live job radar
 export const INCOMING_STREAM_POOL = [
   {
-    title: 'Junior Frontend Developer',
+    title: 'Frontend Engineer - Creator Suite',
+    company: 'ByteDance (TikTok)',
+    badgeColor: 'from-cyan-500 to-pink-500',
+    location: 'Singapore (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: 'SGD 110,000 - 135,000 / yr',
+    tags: ['React', 'TypeScript', 'Video Web APIs', 'Canvas'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'Web APIs', 'Git'],
+    description: 'Build web-based video analytics, content creation studio editors, and creator monetization dashboards for TikTok global creators.'
+  },
+  {
+    title: 'Frontend Developer - Visual Design Suite',
+    company: 'Canva',
+    badgeColor: 'from-cyan-400 to-teal-500',
+    location: 'Sydney / Worldwide (Remote)',
+    workMode: 'Remote',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: '$95,000 - $120,000 / yr + Equity',
+    tags: ['React', 'TypeScript', 'Canvas', 'Design Tools'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'HTML5/CSS', 'Git'],
+    description: 'Help millions of teams around the world design anything. Engineer drag-and-drop template builders, vector illustration tools, and collaborative presentations.'
+  },
+  {
+    title: 'UI Engineer - Jira Cloud Modernization',
+    company: 'Atlassian',
+    badgeColor: 'from-blue-600 to-sky-600',
+    location: 'Bangalore, India (Remote)',
+    workMode: 'Remote',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: '₹22 - ₹26 LPA + RSUs',
+    tags: ['React', 'TypeScript', 'Atlaskit', 'Redux', 'Performance'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'REST APIs', 'Git'],
+    description: 'Work anywhere with Atlassian Team Anywhere policy. Build high-frequency agile issue boards, sprint timelines, and backlog planning widgets with zero latency.'
+  },
+  {
+    title: 'Frontend Observability Engineer',
+    company: 'Datadog',
+    badgeColor: 'from-purple-600 to-violet-800',
+    location: 'Paris, France (Worldwide Remote)',
+    workMode: 'Remote',
+    experience: '1-3 Yrs',
+    salaryLPA: 20,
+    salaryDisplay: '€68,000 - €85,000 / yr',
+    tags: ['React', 'TypeScript', 'D3.js', 'Time-series', 'Telemetry'],
+    requiredSkills: ['React', 'TypeScript', 'JavaScript', 'DOM', 'Git'],
+    description: 'Build real-time server telemetry dashboards, log stream tailers, and incident management consoles displaying millions of concurrent events.'
+  },
+  {
+    title: 'Web Engineer - Credit Onboarding',
     company: 'Slice',
     badgeColor: 'from-purple-500 to-indigo-600',
     location: 'Bangalore, India (Hybrid)',
@@ -355,20 +676,20 @@ export const INCOMING_STREAM_POOL = [
     description: 'Build modern credit card onboarding flows and zero-fee financial dashboards with silky 60fps micro-animations.'
   },
   {
-    title: 'Associate UI Engineer',
-    company: 'Zomato',
-    badgeColor: 'from-red-600 to-rose-700',
-    location: 'Gurgaon, India (Hybrid)',
-    workMode: 'Hybrid',
+    title: 'Junior UI Engineer - Fast Delivery',
+    company: 'Blinkit',
+    badgeColor: 'from-amber-400 to-yellow-500',
+    location: 'Gurgaon, India (On-site)',
+    workMode: 'On-site',
     experience: '0-2 Yrs',
     salaryLPA: 13,
-    salaryDisplay: '₹12 - ₹15 LPA',
-    tags: ['React', 'JavaScript', 'CSS', 'Live Tracking'],
-    requiredSkills: ['React', 'JavaScript', 'HTML5/CSS', 'Git'],
-    description: 'Work on live restaurant menu renderers, rider GPS sync animations, and accessible review modals.'
+    salaryDisplay: '₹11 - ₹14 LPA',
+    tags: ['React', 'Mobile Web', 'PWA', 'Tailwind CSS'],
+    requiredSkills: ['React', 'JavaScript', 'Tailwind CSS', 'HTML5/CSS', 'Git'],
+    description: 'Blinkit powers instant 10-minute grocery delivery across India. Engineer responsive checkout sheets, inventory stock alerts, and route trackers.'
   },
   {
-    title: 'Frontend Engineer (Core Web)',
+    title: 'Frontend Engineer (Big Billion Days UI)',
     company: 'Flipkart',
     badgeColor: 'from-blue-500 to-yellow-500',
     location: 'Bangalore, India (On-site)',
@@ -379,5 +700,18 @@ export const INCOMING_STREAM_POOL = [
     tags: ['React', 'TypeScript', 'Performance', 'PWA'],
     requiredSkills: ['React', 'JavaScript', 'TypeScript', 'HTML5/CSS', 'Git'],
     description: 'Engineer Big Billion Days checkout infrastructure supporting 100,000+ concurrent payment orders per second.'
+  },
+  {
+    title: 'UI Engineer - Crypto & Digital Asset Vault',
+    company: 'CoinDCX',
+    badgeColor: 'from-blue-600 to-teal-500',
+    location: 'Mumbai, India (Hybrid)',
+    workMode: 'Hybrid',
+    experience: '0-2 Yrs',
+    salaryLPA: 14,
+    salaryDisplay: '₹13 - ₹16 LPA',
+    tags: ['React', 'WebSockets', 'Candlestick Charts', 'Trading'],
+    requiredSkills: ['React', 'JavaScript', 'DOM', 'HTML5/CSS', 'Git'],
+    description: 'Build high-speed crypto order books, interactive TradingView charts, and multi-factor authentication security prompts.'
   }
 ];

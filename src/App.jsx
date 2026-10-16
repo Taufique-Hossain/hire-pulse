@@ -11,11 +11,12 @@ import UndoToast from './components/UndoToast';
 import { 
   INITIAL_JOBS, 
   DEFAULT_CANDIDATE_SKILLS, 
+  DEFAULT_PIPELINE,
   INCOMING_STREAM_POOL 
 } from './data/jobsData';
 
 import { 
-  Radio, Zap, ShieldCheck, Activity, Cpu 
+  Radio, Zap, Cpu 
 } from 'lucide-react';
 
 export default function App() {
@@ -84,13 +85,47 @@ export default function App() {
     }
   };
 
-  // 4. Application Pipeline State (persisted: { [jobId]: 'saved' | 'applied' | 'interviewing' | 'offered' })
+  // 4. Jobs Collection State (persisted so dynamic stream drops are never lost)
+  const [jobs, setJobs] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hirepulse_jobs');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const existingIds = new Set(parsed.map(j => j.id));
+          const missingInitial = INITIAL_JOBS.filter(j => !existingIds.has(j.id));
+          return [...parsed, ...missingInitial];
+        }
+      }
+      return INITIAL_JOBS;
+    } catch {
+      return INITIAL_JOBS;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('hirepulse_jobs', JSON.stringify(jobs));
+    } catch (e) {
+      console.error("Failed to save jobs:", e);
+    }
+  }, [jobs]);
+
+  // 5. Application Pipeline State (persisted: { [jobId]: 'saved' | 'applied' | 'interviewing' | 'offered' })
   const [pipeline, setPipeline] = useState(() => {
     try {
       const saved = localStorage.getItem('hirepulse_pipeline');
-      return saved ? JSON.parse(saved) : {};
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Only accept if at least one key matches an existing job in INITIAL_JOBS
+        const hasValid = Object.keys(parsed).some(id => INITIAL_JOBS.some(j => j.id === id));
+        if (hasValid && Object.keys(parsed).length > 0) {
+          return parsed;
+        }
+      }
+      return DEFAULT_PIPELINE;
     } catch {
-      return {};
+      return DEFAULT_PIPELINE;
     }
   });
 
@@ -101,9 +136,6 @@ export default function App() {
       console.error("Failed to save pipeline:", e);
     }
   }, [pipeline]);
-
-  // 5. Jobs Collection State
-  const [jobs, setJobs] = useState(INITIAL_JOBS);
 
   // 6. Optimistic UI Updates & Undo Toast
   const [undoToast, setUndoToast] = useState(null);
@@ -250,8 +282,94 @@ export default function App() {
     });
   }, [jobs, searchQuery, workMode, experience, minSalary, ultraFreshOnly]);
 
-  // 10. Active Modal for Detailed Job View
+  // 10. Active Modal for Detailed Job View & URL Deep-Linking
   const [selectedJobForModal, setSelectedJobForModal] = useState(null);
+
+  const handleOpenJobModal = (job) => {
+    setSelectedJobForModal(job);
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('job', job.id);
+      url.hash = 'jobs';
+      window.history.pushState({ jobId: job.id }, '', url.toString());
+    } catch (e) {
+      console.error('URL pushState error:', e);
+    }
+  };
+
+  const handleCloseJobModal = () => {
+    setSelectedJobForModal(null);
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('job')) {
+        url.searchParams.delete('job');
+        window.history.pushState({}, '', url.toString());
+      }
+    } catch (e) {
+      console.error('URL pushState error:', e);
+    }
+  };
+
+  // Deep-link resolution: Auto-open modal when shared ?job= or #job= link is opened
+  useEffect(() => {
+    const syncJobFromUrl = () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        let targetJobId = params.get('job');
+
+        if (!targetJobId && window.location.hash) {
+          const hash = window.location.hash;
+          if (hash.includes('job=')) {
+            const match = hash.match(/job=([^&]+)/);
+            if (match) targetJobId = match[1];
+          } else if (hash.startsWith('#hp-')) {
+            targetJobId = hash.substring(1);
+          }
+        }
+
+        if (targetJobId) {
+          // 1. Look in currently loaded jobs
+          let found = jobs.find(j => j.id === targetJobId);
+          // 2. Fallback to INITIAL_JOBS
+          if (!found) {
+            found = INITIAL_JOBS.find(j => j.id === targetJobId);
+          }
+          // 3. Fallback to INCOMING_STREAM_POOL
+          if (!found) {
+            const poolMatch = INCOMING_STREAM_POOL.find(j => j.id === targetJobId);
+            if (poolMatch) {
+              found = {
+                ...poolMatch,
+                id: targetJobId,
+                postedMinutesAgo: 3,
+                applicantsCount: 4,
+                urgency: 'Shared Drop'
+              };
+              setJobs(prev => [found, ...prev]);
+            }
+          }
+
+          if (found) {
+            setSelectedJobForModal(found);
+            // Smoothly scroll to jobs section
+            setTimeout(() => {
+              const el = document.getElementById('jobs');
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }
+        } else {
+          // If the URL has no job param, close modal if open via browser navigation
+          setSelectedJobForModal(null);
+        }
+      } catch (err) {
+        console.error('Error syncing job from URL:', err);
+      }
+    };
+
+    syncJobFromUrl();
+    window.addEventListener('popstate', syncJobFromUrl);
+    return () => window.removeEventListener('popstate', syncJobFromUrl);
+  }, [jobs]);
 
   // 11. Real-Time Radar Stream Simulation
   const [nextScanSeconds, setNextScanSeconds] = useState(30);
@@ -296,51 +414,114 @@ export default function App() {
     return () => clearInterval(dropTimer);
   }, []);
 
-  const appliedCount = Object.values(pipeline).filter(s => s === 'applied' || s === 'interviewing' || s === 'offered').length;
-  const savedCount = Object.values(pipeline).filter(s => s === 'saved').length;
+  const validJobIds = useMemo(() => new Set(jobs.map(j => j.id)), [jobs]);
+
+  const appliedCount = useMemo(() => {
+    return Object.entries(pipeline).filter(
+      ([id, s]) => validJobIds.has(id) && (s === 'applied' || s === 'interviewing' || s === 'offered')
+    ).length;
+  }, [pipeline, validJobIds]);
+
+  const savedCount = useMemo(() => {
+    return Object.entries(pipeline).filter(
+      ([id, s]) => validJobIds.has(id) && s === 'saved'
+    ).length;
+  }, [pipeline, validJobIds]);
+
   const ultraFreshCount = jobs.filter(j => j.postedMinutesAgo <= 60).length;
 
   return (
     <div className={`min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200 ${
       darkMode ? 'bg-radar-grid-dark' : 'bg-radar-grid-light'
     }`}>
-      {/* 0. Landing / Refresh Radar Calibration Splash Animation */}
+      {/* 0. Cinematic Shutter & ECG Waveform Entrance Animation */}
       {isCalibrating && (
-        <div 
-          className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-zinc-950/98 backdrop-blur-2xl transition-all duration-300 ease-out ${
-            splashFade ? 'opacity-0 scale-102 pointer-events-none' : 'opacity-100 scale-100'
-          }`}
-          aria-hidden="true"
-        >
-          {/* Animated Sonar Rings */}
-          <div className="relative flex items-center justify-center mb-6">
-            <div className="absolute w-28 h-28 rounded-full border border-indigo-500/30 animate-sonar-pulse pointer-events-none" />
-            <div className="absolute w-44 h-44 rounded-full border border-violet-500/20 animate-sonar-pulse pointer-events-none" style={{ animationDelay: '0.6s' }} />
-            
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-cyan-400 p-0.5 shadow-2xl shadow-indigo-500/40 animate-pop-in">
-              <div className="w-full h-full bg-zinc-950 rounded-[14px] flex items-center justify-center">
-                <Radio className="w-7 h-7 text-cyan-400 animate-pulse stroke-[2.5]" />
+        <div className="fixed inset-0 z-50 pointer-events-none overflow-hidden select-none" aria-hidden="true">
+          {/* Top Shutter Panel */}
+          <div 
+            className={`absolute top-0 inset-x-0 h-1/2 bg-zinc-950 border-b border-indigo-500/30 shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              splashFade ? '-translate-y-full' : 'translate-y-0'
+            }`}
+          >
+            {/* Subtle grid pattern */}
+            <div className="w-full h-full opacity-30 bg-radar-grid-dark" />
+          </div>
+          
+          {/* Bottom Shutter Panel */}
+          <div 
+            className={`absolute bottom-0 inset-x-0 h-1/2 bg-zinc-950 border-t border-indigo-500/30 shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              splashFade ? 'translate-y-full' : 'translate-y-0'
+            }`}
+          >
+            {/* Subtle grid pattern */}
+            <div className="w-full h-full opacity-30 bg-radar-grid-dark" />
+          </div>
+
+          {/* Center Precision Reticle & ECG Pulse HUD */}
+          <div 
+            className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-250 ease-out z-10 ${
+              splashFade ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+            }`}
+          >
+            {/* Precision HUD Reticle Box */}
+            <div className="relative max-w-[calc(100vw-2rem)] px-5 py-6 sm:px-10 sm:py-8 flex flex-col items-center bg-zinc-950/80 backdrop-blur-md rounded-2xl border border-zinc-800/80 shadow-2xl">
+              {/* Four Precision Corner Brackets */}
+              <div className="absolute top-0 left-0 w-3 h-3 sm:w-3.5 sm:h-3.5 border-t-2 border-l-2 border-indigo-400" />
+              <div className="absolute top-0 right-0 w-3 h-3 sm:w-3.5 sm:h-3.5 border-t-2 border-r-2 border-indigo-400" />
+              <div className="absolute bottom-0 left-0 w-3 h-3 sm:w-3.5 sm:h-3.5 border-b-2 border-l-2 border-indigo-400" />
+              <div className="absolute bottom-0 right-0 w-3 h-3 sm:w-3.5 sm:h-3.5 border-b-2 border-r-2 border-indigo-400" />
+
+              {/* Status Header */}
+              <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-mono font-bold tracking-wider text-zinc-400 mb-2.5 sm:mb-3">
+                <span className="flex items-center gap-1.5 text-cyan-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                  <span>BLR-MUM-01</span>
+                </span>
+                <span className="text-zinc-600">•</span>
+                <span className="text-indigo-300">142.8 MHz</span>
               </div>
+
+              {/* Animated ECG Heartbeat / Radar Pulse Line */}
+              <div className="relative my-1 sm:my-2">
+                <svg className="w-48 sm:w-60 h-10 sm:h-12 overflow-visible" viewBox="0 0 260 50" fill="none">
+                  {/* Faint reference grid line */}
+                  <line x1="0" y1="25" x2="260" y2="25" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="1" strokeDasharray="3 3" />
+                  
+                  {/* Active Animated ECG Path */}
+                  <path
+                    d="M0 25 H70 L80 8 L90 42 L100 15 L110 32 L120 25 H260"
+                    stroke="url(#pulse-gradient)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="animate-ecg-draw"
+                  />
+                  <defs>
+                    <linearGradient id="pulse-gradient" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#6366f1" />
+                      <stop offset="50%" stopColor="#818cf8" />
+                      <stop offset="100%" stopColor="#22d3ee" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+
+              {/* Monogram Brand Title */}
+              <div className="flex items-center gap-2 mt-1 sm:mt-2">
+                <h1 className="text-lg sm:text-2xl font-black font-mono tracking-[0.15em] sm:tracking-[0.2em] text-white">
+                  HIREPULSE
+                </h1>
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  LOCKED
+                </span>
+              </div>
+
+              {/* Telemetry subline */}
+              <p className="text-[10px] sm:text-[11px] font-mono text-zinc-400 mt-1.5 sm:mt-2 tracking-wide text-center">
+                Synthesizing Live Engineering Radar...
+              </p>
             </div>
-          </div>
-
-          {/* Title & Status */}
-          <div className="flex items-center gap-2 mb-1.5 animate-slide-down">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-sans">
-              Hire<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400">Pulse</span>
-            </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
-              RADAR ONLINE
-            </span>
-          </div>
-
-          <p className="text-xs text-zinc-400 font-mono mb-5 tracking-wide text-center max-w-xs">
-            Calibrating Tech Frequencies... Scanning Mumbai & Bangalore Nodes
-          </p>
-
-          {/* Progress Bar Line */}
-          <div className="w-48 h-1 bg-zinc-800 rounded-full overflow-hidden p-0">
-            <div className="h-full bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-400 rounded-full animate-progress-sweep" />
           </div>
         </div>
       )}
@@ -362,42 +543,146 @@ export default function App() {
       <RadarBanner
         newJobAlert={newJobAlert}
         onDismissAlert={() => setNewJobAlert(null)}
+        onReviewAlert={(alertJob) => {
+          handleOpenJobModal(alertJob);
+          setNewJobAlert(null);
+        }}
         totalJobsCount={jobs.length}
         ultraFreshCount={ultraFreshCount}
         nextScanSeconds={nextScanSeconds}
       />
 
       {/* 3. Main Workspace */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex-1 w-full">
-        {/* Filter Controls Bar */}
-        <FilterBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          workMode={workMode}
-          onWorkModeChange={setWorkMode}
-          experience={experience}
-          onExperienceChange={setExperience}
-          minSalary={minSalary}
-          onMinSalaryChange={setMinSalary}
-          ultraFreshOnly={ultraFreshOnly}
-          onToggleUltraFresh={() => setUltraFreshOnly(prev => !prev)}
-          onResetFilters={handleResetFilters}
-          hasActiveFilters={hasActiveFilters}
-          filteredCount={filteredJobs.length}
-          totalCount={jobs.length}
-        />
+      {/* 3. High-Fidelity Hero Section */}
+      <section id="home" className="relative pt-8 pb-10 sm:pt-16 sm:pb-20 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            {/* Live Radar chip */}
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-[10px] sm:text-xs font-mono font-semibold mb-4 sm:mb-6 max-w-full">
+              <Radio className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-indigo-500 animate-pulse shrink-0" />
+              <span className="truncate">LIVE RADAR • INDIA & GLOBAL TECH HUBS</span>
+            </div>
 
+            {/* Headline */}
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-zinc-900 dark:text-white leading-[1.15] sm:leading-[1.1] mb-3 sm:mb-5 break-words">
+              High-Velocity Tech Job Radar & Application Pipeline.
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-xs sm:text-base lg:text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6 sm:mb-8">
+              Filter sub-60-minute postings, calculate instantaneous skill compatibility against modern engineering stacks, and manage your pipeline with 0ms optimistic updates.
+            </p>
+
+            {/* Interactive CTAs */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+              <a
+                href="#jobs"
+                onClick={() => setViewMode('list')}
+                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900 text-xs sm:text-sm font-bold shadow-lg shadow-zinc-900/10 transition cursor-pointer text-center"
+              >
+                <Zap className="w-4 h-4 fill-current text-indigo-400 dark:text-indigo-600 shrink-0" />
+                <span>Scan Fresh Openings</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setViewMode('kanban');
+                  setTimeout(() => {
+                    const el = document.getElementById('pipeline');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 50);
+                }}
+                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white text-xs sm:text-sm font-bold border border-zinc-200 dark:border-zinc-700 transition cursor-pointer text-center"
+              >
+                <span>Open Kanban Pipeline</span>
+                {appliedCount > 0 && (
+                  <span className="px-1.5 py-0.2 rounded-full text-xs font-mono bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">
+                    {appliedCount}
+                  </span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsSkillModalOpen(true)}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white text-xs sm:text-sm font-semibold transition cursor-pointer text-center"
+              >
+                <Cpu className="w-4 h-4 text-indigo-500 shrink-0" />
+                <span>Skills Matrix ({candidateSkills.length})</span>
+              </button>
+            </div>
+
+            {/* High-trust Feature Highlights */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-zinc-200/80 dark:border-zinc-800/80">
+              <div>
+                <span className="text-lg sm:text-2xl font-black text-zinc-900 dark:text-white font-mono block">
+                  &lt;60m
+                </span>
+                <span className="text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+                  Golden Window Drops
+                </span>
+              </div>
+              <div>
+                <span className="text-lg sm:text-2xl font-black text-indigo-600 dark:text-indigo-400 font-mono block">
+                  0ms
+                </span>
+                <span className="text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+                  Optimistic Shifts
+                </span>
+              </div>
+              <div>
+                <span className="text-lg sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono block">
+                  100%
+                </span>
+                <span className="text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+                  Offline Storage
+                </span>
+              </div>
+              <div>
+                <span className="text-lg sm:text-2xl font-black text-cyan-600 dark:text-cyan-400 font-mono block">
+                  Reactive
+                </span>
+                <span className="text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+                  Skill Match
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Main Workspace */}
+      <main id="jobs" className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 flex-1 w-full">
         {/* View Switch: Radar Feed vs Pipeline Kanban */}
         {viewMode === 'list' ? (
           <div>
+            {/* Filter Controls Bar */}
+            <FilterBar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              workMode={workMode}
+              onWorkModeChange={setWorkMode}
+              experience={experience}
+              onExperienceChange={setExperience}
+              minSalary={minSalary}
+              onMinSalaryChange={setMinSalary}
+              ultraFreshOnly={ultraFreshOnly}
+              onToggleUltraFresh={() => setUltraFreshOnly(prev => !prev)}
+              onResetFilters={handleResetFilters}
+              hasActiveFilters={hasActiveFilters}
+              filteredCount={filteredJobs.length}
+              totalCount={jobs.length}
+            />
+
             {filteredJobs.length === 0 ? (
-              <div className="py-16 text-center rounded-3xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-6">
-                <Radio className="w-10 h-10 text-indigo-400 mx-auto mb-3 animate-pulse" />
-                <h3 className="font-bold text-lg text-zinc-900 dark:text-white mb-1">
+              <div className="py-12 sm:py-16 text-center rounded-2xl sm:rounded-3xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-5 sm:p-6">
+                <Radio className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400 mx-auto mb-3 animate-pulse" />
+                <h3 className="font-bold text-base sm:text-lg text-zinc-900 dark:text-white mb-1">
                   No matching jobs found on current radar
                 </h3>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4 max-w-sm mx-auto font-mono">
-                  Try adjusting your minimum CTC, clearing filters, or turning off the "Fresh &lt; 1h" toggle.
+                  Try adjusting your minimum CTC, clearing filters, or turning off the "Fresh &lt; 60m" toggle.
                 </p>
                 <button
                   type="button"
@@ -408,7 +693,7 @@ export default function App() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
                 {filteredJobs.map((job, idx) => (
                   <JobCard
                     key={job.id}
@@ -418,77 +703,48 @@ export default function App() {
                     pipelineStatus={pipeline[job.id]}
                     onApply={handleApply}
                     onSave={handleSave}
-                    onViewDetails={setSelectedJobForModal}
+                    onViewDetails={handleOpenJobModal}
                   />
                 ))}
               </div>
             )}
           </div>
         ) : (
-          <KanbanBoard
-            jobs={jobs}
-            pipeline={pipeline}
-            onMoveStage={handleMoveStage}
-            onRemoveFromPipeline={handleRemoveFromPipeline}
-            onViewDetails={setSelectedJobForModal}
-          />
-        )}
-
-        {/* Technical Architecture Highlights Banner */}
-        <section className="mt-14 sm:mt-20 p-5 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-zinc-50 to-indigo-50/40 dark:from-zinc-900 dark:via-zinc-900/80 dark:to-zinc-950 border border-zinc-200 dark:border-zinc-800 transition-all shadow-sm">
-          <div className="max-w-3xl">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 mb-1 font-mono">
-              <ShieldCheck className="w-4 h-4 text-indigo-500" />
-              <span>Production Frontend Architecture • FirstHire Spec</span>
-            </span>
-            <h3 className="text-lg sm:text-2xl font-bold text-zinc-900 dark:text-white mb-2">
-              Engineered for High-Frequency Job Discovery & Zero-Lag State
-            </h3>
-            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
-              HirePulse combines real-time streaming telemetry with optimistic client-side updates (0ms interface latency), 
-              reactive skill gap scoring, responsive Kanban drag/progression states, and Web Storage persistence for 100% offline tolerance.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
-              <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
-                <p className="font-bold text-zinc-900 dark:text-white mb-1 flex items-center gap-1.5 font-sans">
-                  <Zap className="w-3.5 h-3.5 text-indigo-500" />
-                  <span>Optimistic Updates</span>
-                </p>
-                <p className="text-zinc-500 text-[11px]">Instant 0ms pipeline stage shifts with full 5-second Undo rollback capabilities.</p>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
-                <p className="font-bold text-zinc-900 dark:text-white mb-1 flex items-center gap-1.5 font-sans">
-                  <Cpu className="w-3.5 h-3.5 text-indigo-500" />
-                  <span>Dynamic Match %</span>
-                </p>
-                <p className="text-zinc-500 text-[11px]">Reactive skill compatibility scoring comparing candidate matrix against job criteria.</p>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
-                <p className="font-bold text-zinc-900 dark:text-white mb-1 flex items-center gap-1.5 font-sans">
-                  <Activity className="w-3.5 h-3.5 text-cyan-500" />
-                  <span>Freshness Radar</span>
-                </p>
-                <p className="text-zinc-500 text-[11px]">Time-decay relative telemetry highlighting postings made within the golden 60-minute window.</p>
-              </div>
-            </div>
+          <div id="pipeline" className="scroll-mt-24">
+            <KanbanBoard
+              jobs={jobs}
+              pipeline={pipeline}
+              onMoveStage={handleMoveStage}
+              onRemoveFromPipeline={handleRemoveFromPipeline}
+              onViewDetails={handleOpenJobModal}
+              onResetToSample={() => setPipeline(DEFAULT_PIPELINE)}
+              onSwitchToFeed={() => setViewMode('list')}
+            />
           </div>
-        </section>
+        )}
       </main>
 
-      {/* 4. Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-950/90 py-6 text-xs text-zinc-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-          <div className="flex items-center gap-2 justify-center sm:justify-start">
-            <Radio className="w-4 h-4 text-indigo-500" />
-            <span className="font-bold text-zinc-900 dark:text-white font-sans">HirePulse</span>
-            <span className="font-mono text-[11px]">— Real-Time Tech Job Radar & Application Pipeline</span>
+      {/* 5. Minimalist Developer Footer */}
+      <footer className="border-t border-zinc-200 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-md py-6 sm:py-8 text-xs text-zinc-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center shrink-0">
+              <Radio className="w-3.5 h-3.5 text-indigo-400 dark:text-indigo-600" />
+            </div>
+            <span className="font-bold text-zinc-900 dark:text-white font-sans text-sm">HirePulse</span>
+            <span className="font-mono text-[10px] sm:text-[11px] text-zinc-400 dark:text-zinc-500">• Real-Time Tech Job Discovery Engine</span>
           </div>
 
-          <p className="text-[11px] font-mono">
-            React 19 & Tailwind CSS v4 • High-Velocity Frontend Architecture
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 sm:gap-4 text-[11px] font-mono text-zinc-500">
+            <a href="#home" className="hover:text-zinc-900 dark:hover:text-white transition">Back to Top</a>
+            <span>•</span>
+            <a href="#jobs" onClick={() => setViewMode('list')} className="hover:text-zinc-900 dark:hover:text-white transition">Radar</a>
+            <span>•</span>
+            <a href="#jobs" onClick={() => setViewMode('kanban')} className="hover:text-zinc-900 dark:hover:text-white transition">Pipeline</a>
+          </div>
+
+          <p className="text-[10px] sm:text-[11px] font-mono text-zinc-400">
+            React 19 & Tailwind CSS v4
           </p>
         </div>
       </footer>
@@ -497,7 +753,7 @@ export default function App() {
       <JobDetailModal
         job={selectedJobForModal}
         isOpen={Boolean(selectedJobForModal)}
-        onClose={() => setSelectedJobForModal(null)}
+        onClose={handleCloseJobModal}
         candidateSkills={candidateSkills}
         pipelineStatus={selectedJobForModal ? pipeline[selectedJobForModal.id] : null}
         onApply={handleApply}

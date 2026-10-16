@@ -32,10 +32,31 @@ export default function JobDetailModal({
   const isApplied = pipelineStatus === 'applied' || pipelineStatus === 'interviewing' || pipelineStatus === 'offered';
   const isSaved = pipelineStatus === 'saved';
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopyLink = async () => {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('job', job.id);
+      url.hash = 'jobs';
+      const shareUrl = url.toString();
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = shareUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch (err) {
+      console.error('Failed to copy direct share link:', err);
+    }
   };
 
   return (
@@ -166,29 +187,33 @@ export default function JobDetailModal({
         </div>
 
         {/* Modal Footer Controls */}
-        <div className="p-4 sm:p-5 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/80 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+        <div className="p-3.5 sm:p-5 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/80 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-2 justify-between sm:justify-start">
             <button
               type="button"
               onClick={() => onSave(job.id)}
-              className={`p-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
+              className={`flex-1 sm:flex-initial p-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition flex items-center justify-center gap-1.5 ${
                 isSaved
                   ? 'bg-violet-500/20 text-violet-600 dark:text-violet-400 border-violet-500/30 font-bold'
                   : 'bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100'
               }`}
             >
               <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-violet-500' : ''}`} />
-              <span className="hidden sm:inline">{isSaved ? 'Bookmarked' : 'Save'}</span>
+              <span>{isSaved ? 'Bookmarked' : 'Save'}</span>
             </button>
 
             <button
               type="button"
               onClick={handleCopyLink}
-              className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs cursor-pointer transition flex items-center gap-1.5 font-mono"
-              title="Share Opportunity"
+              className={`flex-1 sm:flex-initial p-2.5 rounded-xl border text-xs cursor-pointer transition flex items-center justify-center gap-1.5 font-mono ${
+                copied
+                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-bold'
+                  : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+              }`}
+              title="Copy direct deep link to this job"
             >
-              {copied ? <Check className="w-4 h-4 text-cyan-400" /> : <Share2 className="w-4 h-4" />}
-              <span className="hidden sm:inline">{copied ? 'Copied' : 'Share'}</span>
+              {copied ? <Check className="w-4 h-4 text-emerald-500 stroke-[3]" /> : <Share2 className="w-4 h-4 text-indigo-500" />}
+              <span>{copied ? 'Link Copied!' : 'Share'}</span>
             </button>
           </div>
 
@@ -199,7 +224,7 @@ export default function JobDetailModal({
               onClose();
             }}
             disabled={isApplied}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer ${
+            className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer ${
               isApplied
                 ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 cursor-default'
                 : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white active:scale-95 shadow-indigo-500/25'

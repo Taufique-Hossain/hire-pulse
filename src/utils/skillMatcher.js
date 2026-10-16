@@ -1,7 +1,37 @@
 /**
  * Skill Matcher & Compatibility Scoring Utility
- * Evaluates a candidate's skill matrix against job requirements
+ * Evaluates a candidate's skill matrix against job requirements with token-level accuracy
  */
+
+export function isSingleSkillMatch(candidateSkill, requiredSkill) {
+  if (!candidateSkill || !requiredSkill) return false;
+
+  const cand = candidateSkill.toLowerCase().trim();
+  const req = requiredSkill.toLowerCase().trim();
+
+  if (cand === req) return true;
+
+  // Normalize .js extensions (e.g., "react.js" <-> "react", "node.js" <-> "node")
+  const candClean = cand.replace(/\.js$/i, '');
+  const reqClean = req.replace(/\.js$/i, '');
+  if (candClean === reqClean) return true;
+
+  // Split tokens by slashes, ampersands, or commas (e.g., "HTML5/CSS" -> ["html5", "css"])
+  const candTokens = cand.split(/[/,&+]+/).map(t => t.trim()).filter(Boolean);
+  const reqTokens = req.split(/[/,&+]+/).map(t => t.trim()).filter(Boolean);
+
+  if (reqTokens.includes(candClean) || candTokens.includes(reqClean)) return true;
+  if (reqTokens.some(t => candTokens.includes(t))) return true;
+
+  // Multi-word phrase matching (e.g. "Tailwind" matching "Tailwind CSS")
+  const candWords = cand.split(/\s+/).filter(w => w.length > 2);
+  const reqWords = req.split(/\s+/).filter(w => w.length > 2);
+
+  if (candWords.length === 1 && reqWords.includes(candWords[0])) return true;
+  if (reqWords.length === 1 && candWords.includes(reqWords[0])) return true;
+
+  return false;
+}
 
 export function calculateSkillMatch(candidateSkills = [], requiredSkills = []) {
   if (!requiredSkills || requiredSkills.length === 0) {
@@ -18,16 +48,11 @@ export function calculateSkillMatch(candidateSkills = [], requiredSkills = []) {
     };
   }
 
-  const normCandidate = new Set(candidateSkills.map(s => s.toLowerCase().trim()));
-  
   const matchedSkills = [];
   const missingSkills = [];
 
   for (const skill of requiredSkills) {
-    const norm = skill.toLowerCase().trim();
-    // Direct match or partial match (e.g. 'html5/css' matching 'css')
-    const hasMatch = normCandidate.has(norm) || 
-      Array.from(normCandidate).some(cand => cand.includes(norm) || norm.includes(cand));
+    const hasMatch = candidateSkills.some(cand => isSingleSkillMatch(cand, skill));
     
     if (hasMatch) {
       matchedSkills.push(skill);
@@ -75,8 +100,8 @@ export function calculateSkillMatch(candidateSkills = [], requiredSkills = []) {
  * Format relative minutes into human-readable time strings
  */
 export function formatFreshness(minutesAgo) {
-  if (minutesAgo <= 1) return 'Just now';
-  if (minutesAgo < 60) return `${minutesAgo}m ago`;
+  if (typeof minutesAgo !== 'number' || minutesAgo <= 1) return 'Just now';
+  if (minutesAgo < 60) return `${Math.floor(minutesAgo)}m ago`;
   const hours = Math.floor(minutesAgo / 60);
   if (hours === 1) return '1h ago';
   if (hours < 24) return `${hours}h ago`;

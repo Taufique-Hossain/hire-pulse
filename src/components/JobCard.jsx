@@ -1,6 +1,7 @@
 import React from 'react';
 import { 
-  Clock, CheckCircle2, Bookmark, Sparkles, Zap 
+  Bookmark, Zap, MapPin, 
+  Clock, ArrowUpRight, Check, Sparkles 
 } from 'lucide-react';
 import { calculateSkillMatch, formatFreshness } from '../utils/skillMatcher';
 
@@ -11,170 +12,185 @@ export default function JobCard({
   onApply,
   onSave,
   onViewDetails,
-  index = 0
+  index = 0,
 }) {
-  const matchData = calculateSkillMatch(candidateSkills, job.requiredSkills);
   const isApplied = pipelineStatus === 'applied' || pipelineStatus === 'interviewing' || pipelineStatus === 'offered';
   const isSaved = pipelineStatus === 'saved';
 
+  const matchData = calculateSkillMatch(candidateSkills, job.requiredSkills);
   const isUltraFresh = job.postedMinutesAgo <= 60;
 
   return (
-    <div 
-      className="group relative bg-white dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800/80 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-xl dark:shadow-none dark:hover:shadow-2xl dark:hover:shadow-indigo-950/30 transition-all duration-200 flex flex-col justify-between animate-card-cascade"
-      style={{ animationDelay: `${Math.min(index * 35, 420)}ms` }}
+    <article
+      className="group relative flex flex-col justify-between rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/80 p-5 sm:p-6 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 animate-card-cascade"
+      style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}
     >
-      {/* Left Vertical Accent Indicator Bar */}
-      <div className={`absolute top-4 bottom-4 left-0 w-1 rounded-r-full transition-colors ${
-        isUltraFresh 
-          ? 'bg-gradient-to-b from-cyan-400 to-indigo-600' 
-          : 'bg-zinc-300 dark:bg-zinc-800 group-hover:bg-indigo-500/50'
-      }`} />
-
-      {/* Card Header: Company Badge, Title, Relative Freshness */}
-      <div className="pl-2">
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="flex items-center gap-3">
-            <div className={`w-11 h-11 rounded-xl bg-gradient-to-tr ${job.badgeColor || 'from-indigo-600 to-violet-700'} text-white font-extrabold text-sm flex items-center justify-center shadow-md shadow-indigo-500/15 shrink-0 font-mono tracking-wider`}>
+      {/* Top Meta Row */}
+      <div>
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Company Avatar */}
+            <div 
+              className={`w-11 h-11 rounded-xl bg-gradient-to-tr ${job.badgeColor || 'from-indigo-600 to-violet-600'} text-white font-extrabold text-sm flex items-center justify-center shadow-sm shrink-0 font-mono tracking-wider`}
+            >
               {job.company.substring(0, 2).toUpperCase()}
             </div>
-            <div>
-              <h3 
-                onClick={() => onViewDetails(job)}
-                className="font-bold text-base sm:text-lg text-zinc-900 dark:text-white tracking-tight group-hover:text-indigo-500 transition-colors cursor-pointer"
-              >
-                {job.title}
-              </h3>
-              <p className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 flex items-center gap-1.5 mt-0.5">
-                <span className="text-zinc-900 dark:text-zinc-200">{job.company}</span>
-                <span className="text-zinc-400 dark:text-zinc-700">•</span>
-                <span className="text-zinc-500">{job.location}</span>
-              </p>
+            
+            <div className="min-w-0">
+              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 truncate block">
+                {job.company}
+              </span>
+              <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+                <MapPin className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
+                <span className="truncate">{job.location}</span>
+              </div>
             </div>
           </div>
 
-          {/* Freshness Badge with animated cyan radar pulse */}
-          <div className="flex flex-col items-end shrink-0">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold ${
-              isUltraFresh
-                ? 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-300 border border-cyan-500/30'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700'
-            }`}>
-              {isUltraFresh && (
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-              )}
-              <Clock className="w-3 h-3 text-cyan-500" />
-              <span>{formatFreshness(job.postedMinutesAgo)}</span>
-            </span>
+          {/* Freshness & Save Button */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {isUltraFresh ? (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                {formatFreshness(job.postedMinutesAgo)}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800">
+                <Clock className="w-3 h-3" />
+                {formatFreshness(job.postedMinutesAgo)}
+              </span>
+            )}
 
-            <span className="text-[10px] text-zinc-400 font-mono mt-0.5">
-              {job.applicantsCount} in queue
-            </span>
+            <button
+              type="button"
+              onClick={() => onSave(job.id)}
+              className={`p-1.5 rounded-lg border transition cursor-pointer ${
+                isSaved
+                  ? 'bg-violet-500/15 text-violet-600 dark:text-violet-400 border-violet-500/30'
+                  : 'bg-zinc-50 dark:bg-zinc-800/60 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 border-zinc-200 dark:border-zinc-800 hover:border-zinc-300'
+              }`}
+              title={isSaved ? 'Remove from Saved' : 'Save to Pipeline'}
+              aria-label="Save Job"
+            >
+              <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
+            </button>
           </div>
         </div>
 
-        {/* Salary & Work Mode Tags in JetBrains Mono */}
-        <div className="flex items-center gap-2 flex-wrap mb-4 font-mono">
-          <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold text-xs border border-indigo-500/25">
+        {/* Job Title */}
+        <h3 
+          onClick={() => onViewDetails(job)}
+          className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition-colors leading-snug mb-2 flex items-start justify-between gap-1 group/title"
+        >
+          <span>{job.title}</span>
+          <ArrowUpRight className="w-4 h-4 text-zinc-400 group-hover/title:text-indigo-500 group-hover/title:translate-x-0.5 group-hover/title:-translate-y-0.5 transition-all shrink-0 mt-1 opacity-0 group-hover:opacity-100" />
+        </h3>
+
+        {/* Compensation & Urgency Chips */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-4">
+          <span className="px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/90 text-zinc-900 dark:text-zinc-100 text-xs font-mono font-semibold border border-zinc-200/80 dark:border-zinc-700/80">
             {job.salaryDisplay}
           </span>
-          <span className="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs font-medium border border-zinc-200 dark:border-zinc-700">
+          <span className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs font-medium">
             {job.experience}
           </span>
-          <span className="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs font-medium border border-zinc-200 dark:border-zinc-700">
+          <span className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs font-medium">
             {job.workMode}
           </span>
-          <span className="px-2 py-0.5 rounded-lg bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-300 text-[10px] font-semibold border border-violet-500/20">
-            {job.urgency}
-          </span>
+          {job.urgency && (
+            <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 text-xs font-medium">
+              {job.urgency}
+            </span>
+          )}
         </div>
 
-        {/* Skill Match Section (Dynamic compatibility % and gap badges) */}
-        <div className="mb-4 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/70">
+        {/* Skill Match Breakdown */}
+        <div className="mb-5 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200/80 dark:border-zinc-800/80">
           <div className="flex items-center justify-between text-xs mb-1.5">
-            <span className="font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
+            <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1 font-mono text-[11px]">
               <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-              <span>Skill Alignment</span>
+              Skill Compatibility
             </span>
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30">
+            <span className={`px-1.5 py-0.5 rounded text-[11px] font-mono font-bold border ${matchData.badge.bgClass}`}>
               {matchData.percentage}% • {matchData.badge.label}
             </span>
           </div>
 
-          {/* Match Progress Bar */}
-          <div className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden mb-2.5">
+          {/* Progress Mini Bar */}
+          <div className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden mb-2">
             <div 
-              className="h-full bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-400 rounded-full transition-all duration-400"
-              style={{ width: `${matchData.percentage}%` }}
+              className={`h-full rounded-full transition-all duration-500 ${
+                matchData.percentage >= 80 
+                  ? 'bg-emerald-500' 
+                  : matchData.percentage >= 60 
+                  ? 'bg-teal-500' 
+                  : matchData.percentage >= 40 
+                  ? 'bg-amber-500' 
+                  : 'bg-zinc-400'
+              }`}
+              style={{ width: `${Math.max(matchData.percentage, 10)}%` }}
             />
           </div>
 
-          {/* Matched (Cyan) and Missing (Amber) Skill Chips */}
-          <div className="flex items-center gap-1.5 flex-wrap text-[11px] font-mono">
-            {matchData.matchedSkills.map((s) => (
-              <span key={s} className="px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 font-semibold flex items-center gap-1 border border-cyan-500/20">
-                <CheckCircle2 className="w-3 h-3 text-cyan-500" />
-                <span>{s}</span>
+          {/* Key tags preview */}
+          <div className="flex flex-wrap gap-1">
+            {job.requiredSkills.slice(0, 4).map((skill) => {
+              const isMatched = matchData.matchedSkills.includes(skill);
+              return (
+                <span
+                  key={skill}
+                  className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${
+                    isMatched
+                      ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold'
+                      : 'bg-zinc-200/60 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
+                  }`}
+                >
+                  {isMatched ? `✓ ${skill}` : skill}
+                </span>
+              );
+            })}
+            {job.requiredSkills.length > 4 && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded font-mono bg-zinc-200/40 dark:bg-zinc-800/40 text-zinc-400">
+                +{job.requiredSkills.length - 4} more
               </span>
-            ))}
-            {matchData.missingSkills.map((s) => (
-              <span key={s} className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium border border-amber-500/20">
-                +{s}
-              </span>
-            ))}
+            )}
           </div>
         </div>
       </div>
 
-      {/* Card Action Footer */}
-      <div className="pl-2 pt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between gap-2">
+      {/* Action Footer */}
+      <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-2">
         <button
           type="button"
-          onClick={() => onSave(job.id)}
-          className={`p-2 rounded-xl border text-xs font-semibold transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 ${
-            isSaved
-              ? 'bg-violet-500/15 text-violet-600 dark:text-violet-400 border-violet-500/30 font-bold'
-              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hover:text-zinc-900 dark:hover:text-white'
-          }`}
-          title={isSaved ? "Saved to Pipeline" : "Save for review"}
+          onClick={() => onViewDetails(job)}
+          className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition py-1.5 px-2.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
         >
-          <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-violet-500' : ''}`} />
-          <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save'}</span>
+          View Details
         </button>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => onViewDetails(job)}
-            className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold cursor-pointer transition font-mono"
-          >
-            Review JD
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onApply(job.id)}
-            disabled={isApplied}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer ${
-              isApplied
-                ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 cursor-default'
-                : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white active:scale-95 shadow-indigo-500/25'
-            }`}
-          >
-            {isApplied ? (
-              <>
-                <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
-                <span className="font-mono">Applied ✓</span>
-              </>
-            ) : (
-              <>
-                <Zap className="w-3.5 h-3.5" />
-                <span>1-Click Apply</span>
-              </>
-            )}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => onApply(job.id)}
+          disabled={isApplied}
+          className={`flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer ${
+            isApplied
+              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-default'
+              : 'bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-950 shadow-zinc-900/10'
+          }`}
+        >
+          {isApplied ? (
+            <>
+              <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Applied</span>
+            </>
+          ) : (
+            <>
+              <Zap className="w-3.5 h-3.5 fill-current" />
+              <span>1-Click Apply</span>
+            </>
+          )}
+        </button>
       </div>
-    </div>
+    </article>
   );
 }
