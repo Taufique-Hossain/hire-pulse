@@ -10,18 +10,18 @@ export default function UndoToast({
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 animate-pop-in">
-      <div className="relative overflow-hidden bg-slate-900 dark:bg-slate-950 text-white border border-emerald-500/40 rounded-2xl p-3.5 shadow-2xl flex items-center justify-between gap-3">
+      <div className="relative overflow-hidden bg-zinc-950 text-white border border-indigo-500/40 rounded-2xl p-3.5 shadow-2xl flex items-center justify-between gap-3 font-sans">
         {/* Progress bar countdown line */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-800 overflow-hidden">
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-zinc-800 overflow-hidden">
           <div 
-            className="h-full bg-emerald-500 rounded-full animate-splash-progress" 
+            className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full animate-progress-sweep" 
             style={{ animationDuration: '5s' }}
           />
         </div>
 
         <div className="flex items-center gap-2.5 text-xs">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          <p className="font-medium text-slate-200">
+          <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
+          <p className="font-medium text-zinc-200">
             {toast.message}
           </p>
         </div>
@@ -30,7 +30,7 @@ export default function UndoToast({
           <button
             type="button"
             onClick={onUndo}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-xs font-bold border border-emerald-500/40 cursor-pointer transition active:scale-95"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 text-xs font-bold border border-indigo-500/40 cursor-pointer transition active:scale-95 font-mono"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Undo</span>
@@ -38,7 +38,7 @@ export default function UndoToast({
           <button
             type="button"
             onClick={onDismiss}
-            className="text-slate-400 hover:text-white p-1 cursor-pointer transition"
+            className="text-zinc-400 hover:text-white p-1 cursor-pointer transition"
           >
             <X className="w-3.5 h-3.5" />
           </button>

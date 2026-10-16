@@ -14,10 +14,29 @@ import {
   INCOMING_STREAM_POOL 
 } from './data/jobsData';
 
-import { Radar, Sparkles, Zap, ShieldCheck, Clock } from 'lucide-react';
+import { 
+  Radio, Zap, ShieldCheck, Activity, Cpu 
+} from 'lucide-react';
 
 export default function App() {
-  // 1. Dark / Light Theme (persisted, defaults to dark)
+  // 1. Landing & Refresh Radar Calibration Splash Animation
+  const [isCalibrating, setIsCalibrating] = useState(true);
+  const [splashFade, setSplashFade] = useState(false);
+
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => {
+      setSplashFade(true);
+    }, 650);
+    const removeTimer = setTimeout(() => {
+      setIsCalibrating(false);
+    }, 950);
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
+    };
+  }, []);
+
+  // 2. Dark / Light Theme (persisted, defaults to dark)
   const [darkMode, setDarkMode] = useState(() => {
     try {
       const saved = localStorage.getItem('hirepulse_theme');
@@ -44,7 +63,7 @@ export default function App() {
 
   const toggleTheme = () => setDarkMode(prev => !prev);
 
-  // 2. Candidate Skills Matrix (persisted in localStorage)
+  // 3. Candidate Skills Matrix (persisted in localStorage)
   const [candidateSkills, setCandidateSkills] = useState(() => {
     try {
       const saved = localStorage.getItem('hirepulse_skills');
@@ -65,7 +84,7 @@ export default function App() {
     }
   };
 
-  // 3. Application Pipeline State (persisted: { [jobId]: 'saved' | 'applied' | 'interviewing' | 'offered' })
+  // 4. Application Pipeline State (persisted: { [jobId]: 'saved' | 'applied' | 'interviewing' | 'offered' })
   const [pipeline, setPipeline] = useState(() => {
     try {
       const saved = localStorage.getItem('hirepulse_pipeline');
@@ -83,18 +102,17 @@ export default function App() {
     }
   }, [pipeline]);
 
-  // 4. Jobs Collection State (starts with curated Indian tech dataset)
+  // 5. Jobs Collection State
   const [jobs, setJobs] = useState(INITIAL_JOBS);
 
-  // 5. Optimistic UI Updates & Undo Toast
+  // 6. Optimistic UI Updates & Undo Toast
   const [undoToast, setUndoToast] = useState(null);
   const undoTimeoutRef = useRef(null);
 
   const triggerOptimisticAction = (jobId, previousStage, newStage, message) => {
-    // Clear any active undo timer
     if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
 
-    // Apply update instantly (0ms latency)
+    // Apply update instantly (0ms interface latency)
     setPipeline(prev => ({ ...prev, [jobId]: newStage }));
 
     // Show undo toast
@@ -173,10 +191,10 @@ export default function App() {
     if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
   };
 
-  // 6. View Mode: 'list' (Radar Feed) vs 'kanban' (Pipeline Board)
+  // 7. View Mode: 'list' (Radar Feed) vs 'kanban' (Pipeline Board)
   const [viewMode, setViewMode] = useState('list');
 
-  // 7. Filter State
+  // 8. Filter State
   const [searchQuery, setSearchQuery] = useState('');
   const [workMode, setWorkMode] = useState('All');
   const [experience, setExperience] = useState('All');
@@ -199,10 +217,9 @@ export default function App() {
     setUltraFreshOnly(false);
   };
 
-  // 8. Filtered Jobs Computation
+  // 9. Filtered Jobs Computation
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
-      // Search query (title, company, location)
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
         const matchesQuery = 
@@ -213,22 +230,18 @@ export default function App() {
         if (!matchesQuery) return false;
       }
 
-      // Work Mode
       if (workMode !== 'All' && job.workMode !== workMode) {
         return false;
       }
 
-      // Experience Level
       if (experience !== 'All' && job.experience !== experience) {
         return false;
       }
 
-      // Minimum Salary (LPA)
       if (job.salaryLPA < minSalary) {
         return false;
       }
 
-      // Ultra-fresh (<60m)
       if (ultraFreshOnly && job.postedMinutesAgo > 60) {
         return false;
       }
@@ -237,10 +250,10 @@ export default function App() {
     });
   }, [jobs, searchQuery, workMode, experience, minSalary, ultraFreshOnly]);
 
-  // 9. Active Modal for Detailed Job View
+  // 10. Active Modal for Detailed Job View
   const [selectedJobForModal, setSelectedJobForModal] = useState(null);
 
-  // 10. Real-Time Radar Stream Simulation (Scans and drops new jobs)
+  // 11. Real-Time Radar Stream Simulation
   const [nextScanSeconds, setNextScanSeconds] = useState(30);
   const [newJobAlert, setNewJobAlert] = useState(null);
   const streamPoolIndexRef = useRef(0);
@@ -249,7 +262,6 @@ export default function App() {
     const timer = setInterval(() => {
       setNextScanSeconds((prev) => {
         if (prev <= 1) {
-          // Trigger scan drop from incoming pool if available
           if (streamPoolIndexRef.current < INCOMING_STREAM_POOL.length) {
             const rawIncoming = INCOMING_STREAM_POOL[streamPoolIndexRef.current];
             const newJob = {
@@ -265,7 +277,7 @@ export default function App() {
             setNewJobAlert(newJob);
             streamPoolIndexRef.current += 1;
           }
-          return 30; // reset to 30s countdown
+          return 30;
         }
         return prev - 1;
       });
@@ -274,13 +286,55 @@ export default function App() {
     return () => clearInterval(timer);
   }, []);
 
-  // Counts
   const appliedCount = Object.values(pipeline).filter(s => s === 'applied' || s === 'interviewing' || s === 'offered').length;
   const savedCount = Object.values(pipeline).filter(s => s === 'saved').length;
   const ultraFreshCount = jobs.filter(j => j.postedMinutesAgo <= 60).length;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-250">
+    <div className={`min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200 ${
+      darkMode ? 'bg-radar-grid-dark' : 'bg-radar-grid-light'
+    }`}>
+      {/* 0. Landing / Refresh Radar Calibration Splash Animation */}
+      {isCalibrating && (
+        <div 
+          className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-zinc-950/98 backdrop-blur-2xl transition-all duration-300 ease-out ${
+            splashFade ? 'opacity-0 scale-102 pointer-events-none' : 'opacity-100 scale-100'
+          }`}
+          aria-hidden="true"
+        >
+          {/* Animated Sonar Rings */}
+          <div className="relative flex items-center justify-center mb-6">
+            <div className="absolute w-28 h-28 rounded-full border border-indigo-500/30 animate-sonar-pulse pointer-events-none" />
+            <div className="absolute w-44 h-44 rounded-full border border-violet-500/20 animate-sonar-pulse pointer-events-none" style={{ animationDelay: '0.6s' }} />
+            
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-cyan-400 p-0.5 shadow-2xl shadow-indigo-500/40 animate-pop-in">
+              <div className="w-full h-full bg-zinc-950 rounded-[14px] flex items-center justify-center">
+                <Radio className="w-7 h-7 text-cyan-400 animate-pulse stroke-[2.5]" />
+              </div>
+            </div>
+          </div>
+
+          {/* Title & Status */}
+          <div className="flex items-center gap-2 mb-1.5 animate-slide-down">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-sans">
+              Hire<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400">Pulse</span>
+            </h1>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
+              RADAR ONLINE
+            </span>
+          </div>
+
+          <p className="text-xs text-zinc-400 font-mono mb-5 tracking-wide text-center max-w-xs">
+            Calibrating Tech Frequencies... Scanning Mumbai & Bangalore Nodes
+          </p>
+
+          {/* Progress Bar Line */}
+          <div className="w-48 h-1 bg-zinc-800 rounded-full overflow-hidden p-0">
+            <div className="h-full bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-400 rounded-full animate-progress-sweep" />
+          </div>
+        </div>
+      )}
+
       {/* 1. Header & Navigation */}
       <Navbar
         darkMode={darkMode}
@@ -323,31 +377,32 @@ export default function App() {
           totalCount={jobs.length}
         />
 
-        {/* View Switch: Radar Feed (List Grid) vs Application Pipeline (Kanban) */}
+        {/* View Switch: Radar Feed vs Pipeline Kanban */}
         {viewMode === 'list' ? (
           <div>
             {filteredJobs.length === 0 ? (
-              <div className="py-16 text-center rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-6">
-                <Radar className="w-10 h-10 text-slate-400 mx-auto mb-3 animate-spin-slow" />
-                <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">
+              <div className="py-16 text-center rounded-3xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-6">
+                <Radio className="w-10 h-10 text-indigo-400 mx-auto mb-3 animate-pulse" />
+                <h3 className="font-bold text-lg text-zinc-900 dark:text-white mb-1">
                   No matching jobs found on current radar
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 max-w-sm mx-auto">
-                  Try adjusting your salary threshold, removing filters, or turning off the "Fresh &lt; 1h" toggle.
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4 max-w-sm mx-auto font-mono">
+                  Try adjusting your minimum CTC, clearing filters, or turning off the "Fresh &lt; 1h" toggle.
                 </p>
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition cursor-pointer shadow-md"
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition cursor-pointer shadow-md shadow-indigo-500/25 font-mono"
                 >
                   Reset All Filters
                 </button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {filteredJobs.map((job) => (
+                {filteredJobs.map((job, idx) => (
                   <JobCard
                     key={job.id}
+                    index={idx}
                     job={job}
                     candidateSkills={candidateSkills}
                     pipelineStatus={pipeline[job.id]}
@@ -369,44 +424,44 @@ export default function App() {
           />
         )}
 
-        {/* Architecture & Engineering Highlights Banner */}
-        <section className="mt-14 sm:mt-20 p-5 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-slate-50 to-emerald-50/40 dark:from-slate-900 dark:via-slate-900/60 dark:to-slate-950 border border-slate-200 dark:border-slate-800 transition-all shadow-sm">
+        {/* Technical Architecture Highlights Banner */}
+        <section className="mt-14 sm:mt-20 p-5 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-zinc-50 to-indigo-50/40 dark:from-zinc-900 dark:via-zinc-900/80 dark:to-zinc-950 border border-zinc-200 dark:border-zinc-800 transition-all shadow-sm">
           <div className="max-w-3xl">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 mb-1">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span>Production Architecture • Built for FirstHire</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 mb-1 font-mono">
+              <ShieldCheck className="w-4 h-4 text-indigo-500" />
+              <span>Production Frontend Architecture • FirstHire Spec</span>
             </span>
-            <h3 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white mb-2">
+            <h3 className="text-lg sm:text-2xl font-bold text-zinc-900 dark:text-white mb-2">
               Engineered for High-Frequency Job Discovery & Zero-Lag State
             </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
-              HirePulse combines real-time simulated WebSocket streaming with optimistic client-side updates (0ms interface latency), 
-              instant skill gap scoring, responsive Kanban drag/progression states, and Web Storage persistence for 100% offline tolerance.
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
+              HirePulse combines real-time streaming telemetry with optimistic client-side updates (0ms interface latency), 
+              reactive skill gap scoring, responsive Kanban drag/progression states, and Web Storage persistence for 100% offline tolerance.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-white dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
-                <p className="font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 text-emerald-500" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+              <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                <p className="font-bold text-zinc-900 dark:text-white mb-1 flex items-center gap-1.5 font-sans">
+                  <Zap className="w-3.5 h-3.5 text-indigo-500" />
                   <span>Optimistic Updates</span>
                 </p>
-                <p className="text-slate-500 text-[11px]">Instant 0ms pipeline stage shifts with full 5-second Undo rollback capabilities.</p>
+                <p className="text-zinc-500 text-[11px]">Instant 0ms pipeline stage shifts with full 5-second Undo rollback capabilities.</p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
-                <p className="font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+              <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                <p className="font-bold text-zinc-900 dark:text-white mb-1 flex items-center gap-1.5 font-sans">
+                  <Cpu className="w-3.5 h-3.5 text-indigo-500" />
                   <span>Dynamic Match %</span>
                 </p>
-                <p className="text-slate-500 text-[11px]">Reactive skill compatibility scoring comparing candidate matrix against job criteria.</p>
+                <p className="text-zinc-500 text-[11px]">Reactive skill compatibility scoring comparing candidate matrix against job criteria.</p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-white dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
-                <p className="font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-emerald-500" />
+              <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                <p className="font-bold text-zinc-900 dark:text-white mb-1 flex items-center gap-1.5 font-sans">
+                  <Activity className="w-3.5 h-3.5 text-cyan-500" />
                   <span>Freshness Radar</span>
                 </p>
-                <p className="text-slate-500 text-[11px]">Time-decay relative telemetry highlighting postings made within the golden 60-minute window.</p>
+                <p className="text-zinc-500 text-[11px]">Time-decay relative telemetry highlighting postings made within the golden 60-minute window.</p>
               </div>
             </div>
           </div>
@@ -414,16 +469,16 @@ export default function App() {
       </main>
 
       {/* 4. Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950/90 py-6 text-xs text-slate-500">
+      <footer className="border-t border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-950/90 py-6 text-xs text-zinc-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
           <div className="flex items-center gap-2 justify-center sm:justify-start">
-            <Radar className="w-4 h-4 text-emerald-500" />
-            <span className="font-bold text-slate-900 dark:text-white font-mono">HirePulse</span>
-            <span>— Real-Time Tech Job Radar & Application Pipeline</span>
+            <Radio className="w-4 h-4 text-indigo-500" />
+            <span className="font-bold text-zinc-900 dark:text-white font-sans">HirePulse</span>
+            <span className="font-mono text-[11px]">— Real-Time Tech Job Radar & Application Pipeline</span>
           </div>
 
-          <p className="text-[11px]">
-            Built with React 19 & Tailwind CSS v4 • High-Performance Frontend Engineering
+          <p className="text-[11px] font-mono">
+            React 19 & Tailwind CSS v4 • High-Velocity Frontend Architecture
           </p>
         </div>
       </footer>
