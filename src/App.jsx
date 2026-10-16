@@ -258,32 +258,42 @@ export default function App() {
   const [newJobAlert, setNewJobAlert] = useState(null);
   const streamPoolIndexRef = useRef(0);
 
+  // 1-second cadence countdown
   useEffect(() => {
     const timer = setInterval(() => {
-      setNextScanSeconds((prev) => {
-        if (prev <= 1) {
-          if (streamPoolIndexRef.current < INCOMING_STREAM_POOL.length) {
-            const rawIncoming = INCOMING_STREAM_POOL[streamPoolIndexRef.current];
-            const newJob = {
-              ...rawIncoming,
-              id: `hp-live-${Date.now()}`,
-              postedMinutesAgo: 1,
-              applicantsCount: 2,
-              urgency: 'Fresh Drop',
-              salaryLPA: rawIncoming.salaryLPA || 14
-            };
-
-            setJobs(current => [newJob, ...current]);
-            setNewJobAlert(newJob);
-            streamPoolIndexRef.current += 1;
-          }
-          return 30;
-        }
-        return prev - 1;
-      });
+      setNextScanSeconds((prev) => (prev <= 1 ? 30 : prev - 1));
     }, 1000);
 
     return () => clearInterval(timer);
+  }, []);
+
+  // 30-second cadence job drop from incoming stream
+  useEffect(() => {
+    const dropTimer = setInterval(() => {
+      if (streamPoolIndexRef.current < INCOMING_STREAM_POOL.length) {
+        const rawIncoming = INCOMING_STREAM_POOL[streamPoolIndexRef.current];
+        streamPoolIndexRef.current += 1;
+        const uniqueId = `hp-live-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+        const newJob = {
+          ...rawIncoming,
+          id: uniqueId,
+          postedMinutesAgo: 1,
+          applicantsCount: 2,
+          urgency: 'Fresh Drop',
+          salaryLPA: rawIncoming.salaryLPA || 14
+        };
+
+        setJobs((current) => {
+          if (current.some((j) => j.company === newJob.company && j.title === newJob.title)) {
+            return current;
+          }
+          return [newJob, ...current];
+        });
+        setNewJobAlert(newJob);
+      }
+    }, 30000);
+
+    return () => clearInterval(dropTimer);
   }, []);
 
   const appliedCount = Object.values(pipeline).filter(s => s === 'applied' || s === 'interviewing' || s === 'offered').length;
